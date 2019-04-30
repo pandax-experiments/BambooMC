@@ -1,0 +1,7 @@
+message("enable example")
+set(source_path ${PROJECT_SOURCE_DIR}/user/detectors/example)
+set(Detector ${Detector} ${source_path}/SampleMaterial.cc)
+set(Detector ${Detector} ${source_path}/SampleWorld.cc)
+set(Detector ${Detector} ${source_path}/SampleCylinder.cc)
+set(Detector ${Detector} ${source_path}/SampleWater.cc)
+set(Detector ${Detector} ${source_path}/SampleSteelContainer.cc)

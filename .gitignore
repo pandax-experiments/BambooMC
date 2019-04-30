@@ -1,0 +1,11 @@
+.#*
+\#*
+*~
+*.o
+*.a
+*.so
+build/
+Makefile
+.*
+!.gitignore
+doc/

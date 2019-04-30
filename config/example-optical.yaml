@@ -1,0 +1,27 @@
+run: 1234
+geometry:
+  material:
+    name: SampleMaterial
+  detectors:
+  - type: SampleWorld
+    name: World
+    parameters:
+      half_x: 4*m
+      half_y: 4*m
+      half_z: 4*m
+  - name: OpDetector
+    type: CylinderOp
+    parent: World
+    parameters:
+      radius: 1*m
+      height: 2*m
+physics:
+  name: PandaXOpticalPhysics
+  parameters:
+    cutlength: 0.1*mm
+generator:
+  name: SimpleGPSGenerator
+analysis:
+  name: PandaXOpticalAnalysis
+  parameters:
+    sdName: OpticalSD

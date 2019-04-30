@@ -1,0 +1,68 @@
+{
+   "run": 1234,
+   "geometry": {
+      "material": {
+         "name": "SampleMaterial"
+      },
+      "detectors": [
+         {
+            "type": "SampleWorld",
+            "name": "World",
+            "parameters": {
+               "half_x": "4*m",
+               "half_y": "4*m",
+               "half_z": "4*m"
+            }
+         },
+         {
+            "type": "SampleWater",
+            "name": "WaterShield",
+            "parent": "World",
+            "parameters": {
+               "width_x": "4*m",
+               "width_y": "4*m",
+               "width_z": "4*m"
+            }
+         },
+         {
+            "type": "SampleSteelContainer",
+            "name": "Container",
+            "parent": "WaterShield",
+            "parameters": {
+               "radius": "1.05*m",
+               "height": "2.1*m"
+            }
+         },
+         {
+            "name": "XenonDetector",
+            "type": "SampleCylinder",
+            "parent": "Container",
+            "parameters": {
+               "radius": "1*m",
+               "height": "2*m"
+            }
+         }
+      ]
+   },
+   "physics": {
+      "name": "PandaXPhysics",
+      "parameters": {
+         "cutlength": "0.1*mm"
+      }
+   },
+   "generator": {
+      "name": "SimpleGPSGenerator"
+   },
+   "analysis": {
+      "name": "PandaXAnalysis",
+      "parameters": {
+         "EnableEnergyDeposition": 1,
+         "EnableSurfaceFlux": 0,
+         "EnablePrimaryParticle": 1,
+         "SaveNullEvents": 0,
+         "EnableDecayChainSplitting": 1,
+         "ChainSplittingLifeTime": "400*us",
+         "UserSeed": 0
+      }
+   }
+}

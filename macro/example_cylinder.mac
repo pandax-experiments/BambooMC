@@ -1,0 +1,9 @@
+/gps/pos/type Volume
+/gps/pos/shape Cylinder
+/gps/pos/centre 0 0 0
+/gps/pos/halfz 1.1 m
+/gps/pos/radius 1.1 m
+/gps/pos/confine SampleSteelContainer
+/gps/particle ion
+
+/gps/ion 92 238
