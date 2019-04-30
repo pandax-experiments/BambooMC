@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<BambooMC>
+  <run number="1234"/>
+  <geometry>
+    <detector type="SampleWorldBox">
+      <parameter name="half_x" value="8000"/>
+      <parameter name="half_y" value="8000"/>
+      <parameter name="half_z" value="8000"/>
+    </detector>
+    <detector type="SimpleXenonBox" parent="SampleWorldBox">
+      <parameter name="halfx" value="1.0*m"/>
+      <parameter name="halfy" value="1.0*m"/>
+      <parameter name="halfz" value="1.0*m"/>
+    </detector>
+    <detector type="PtfeBlock" parent="SimpleXenonBox">
+      <parameter name="halfx" value="0.5*m"/>
+      <parameter name="halfy" value="0.5*m"/>
+      <parameter name="halfz" value="0.2*m"/>
+    </detector>
+  </geometry>
+  <physics name="SimpleUnderGroundPhysics">
+    <parameter name="cutlength" value="0.1*mm"/>
+  </physics>
+  <generator name="SimpleGPSGenerator"/>
+  <analysis name="PandaXAnalysis">
+    <parameter name="EnableEnergyDeposition" value="0"/>
+    <parameter name="EnableFlatSurfaceFlux" value="1"/>
+    <parameter name="enable_primary_particle" value="1"/>
+    <parameter name="save_null_event" value="0"/>
+    <parameter name="enable_decay_chain_splitting" value="1"/>
+  </analysis>
+</BambooMC>

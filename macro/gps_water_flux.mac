@@ -1,0 +1,22 @@
+/gps/pos/type Volume
+/gps/pos/shape Para
+/gps/pos/centre 0 0 0 m
+/gps/pos/halfx 13.5 m
+/gps/pos/halfy 11 m
+/gps/pos/halfz 9.5 m
+
+# confine in the rock
+#/gps/pos/confine RockWall
+# confine in the concrete
+/gps/pos/confine ConcreteWall
+
+/gps/ang/type iso
+/gps/particle ion
+
+#u238
+/gps/ion 92 238
+
+#th232
+#/gps/ion 90 232
+
+/gps/energy 0 MeV

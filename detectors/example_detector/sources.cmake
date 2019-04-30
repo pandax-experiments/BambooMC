@@ -1,0 +1,6 @@
+message("enable example detector ...")
+set(source_path ${PROJECT_SOURCE_DIR}/detectors/example_detector)
+set(Detector ${Detector} ${source_path}/PtfeBlock.cc)
+set(Detector ${Detector} ${source_path}/SimpleXenonBox.cc)
+set(Detector ${Detector} ${source_path}/SimpleVacuumBox.cc)
+set(Detector ${Detector} ${source_path}/MetalSphere.cc)

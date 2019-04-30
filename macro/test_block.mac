@@ -1,0 +1,14 @@
+/gps/pos/type Volume
+/gps/pos/shape Para
+/gps/pos/centre 0 0 0
+/gps/pos/halfx 0.5 m
+/gps/pos/halfy 0.5 m
+/gps/pos/halfz 0.2 m
+/gps/pos/confine PtfeBlock
+/gps/ang/type iso
+/gps/particle ion
+# u238
+/gps/ion 92 238
+# th232
+#/gps/ion 90 232
+/gps/energy 0 MeV

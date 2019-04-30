@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<BambooMC>
+  <run number="9001"/>
+  <geometry>
+    <material name="SampleMaterial"/>
+    <detector name="SimpleLabWall">
+      <parameter name="length" value="20*m"/>
+      <parameter name="width" value="15*m"/>
+      <parameter name="height" value="12*m"/>
+      <parameter name="rock_wall_thickness" value="3*m"/>
+      <parameter name="concrete_wall_thickness" value="0.5*m"/>
+      <parameter name="concrete_floor_thickness" value="0.5*m"/>
+      <parameter name="visible" value="1"/>
+    </detector>
+    <detector name="WaterShield" parent="SimpleLabWall">
+      <parameter name="shape" value="1"/>
+      <parameter name="length" value="20"/>
+      <parameter name="width" value="15"/>
+      <parameter name="height" value="12"/>
+      <parameter name="counting_flux_in" value="1"/>
+    </detector>
+  </geometry>
+  <physics name="SimpleUnderGroundPhysics">
+    <parameter name="cutlength" value="0.005*mm"/>
+  </physics>
+  <generator name="SimpleGPSGenerator"/>
+  <analysis name="PandaXAnalysis">
+    <parameter name="EnableEnergyDeposition" value="0"/>
+    <parameter name="EnableFlatSurfaceFlux" value="1"/>
+    <parameter name="enable_primary_particle" value="1"/>
+    <parameter name="save_null_event" value="0"/>
+  </analysis>
+</BambooMC>
