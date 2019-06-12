@@ -65,7 +65,7 @@ class BambooGlobalVariables {
     const vector<DetectorParameters> &getDetectorParametersList();
 
     DetectorParameters &
-    findDetectorPartParameters(const string &name) throw(string);
+    findDetectorPartParameters(const string &name);
 
     BambooDetectorPart *findDetectorPart(const string &name);
 

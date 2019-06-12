@@ -205,7 +205,7 @@ BambooGlobalVariables::getDetectorParametersList() {
 }
 
 DetectorParameters &BambooGlobalVariables::findDetectorPartParameters(
-    const string &name) throw(string) {
+    const string &name) {
     for (size_t i = 0; i < detectorParametersList_.size(); ++i) {
         if (detectorParametersList_[i].getDetectorPartName() == name) {
             return detectorParametersList_[i];
