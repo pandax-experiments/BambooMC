@@ -1,9 +1,7 @@
 #include "BambooControl.hh"
 #include "BambooGlobalVariables.hh"
 
-#include <G4UImanager.hh>
 #include <sstream>
-#include <string>
 #include <unistd.h>
 
 G4int BambooControl::DETECTOR_TYPE = 0;
@@ -13,10 +11,10 @@ G4String BambooControl::MacroFileName = "";
 G4String BambooControl::DataFileName = "";
 G4String BambooControl::XmlFileName = "";
 
-BambooControl *BambooControl::theControl = 0;
+BambooControl *BambooControl::theControl = nullptr;
 
 BambooControl *BambooControl::getControl() {
-    if (theControl == 0) {
+    if (theControl == nullptr) {
         theControl = new BambooControl();
     }
     return theControl;
