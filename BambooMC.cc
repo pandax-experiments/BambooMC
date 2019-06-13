@@ -10,6 +10,7 @@
 #include <G4UImanager.hh>
 
 #include <iostream>
+#include <memory>
 #include <sstream>
 #include <string>
 
@@ -23,30 +24,38 @@
 void usage(const char *exeName);
 
 int main(int argc, char *argv[]) {
-    BambooControl::getControl()->setup(argc, argv);
 
+    BambooControl::getControl()->setup(argc, argv);
     G4cout << "Control loaded." << G4endl;
 
-    G4UIExecutive *ui = 0;
+    std::unique_ptr<G4UIExecutive> ui{nullptr};
     if (BambooControl::INTERACTIVE) {
-        ui = new G4UIExecutive(argc, argv);
+        ui = std::unique_ptr<G4UIExecutive>{new G4UIExecutive(argc, argv)};
     }
-    auto runManager = new G4RunManager;
+
+    std::unique_ptr<G4RunManager> runManager{new G4RunManager};
 
     runManager->SetRunIDCounter(
         BambooGlobalVariables::Instance()->getRunNumber());
+
+    // initialize the detector
     runManager->SetUserInitialization(new BambooDetectorConstruction);
 
-    if (BambooGlobalVariables::Instance()->getPhysicsName().find("Physics") ==
-        std::string::npos) {
+    // initialize the physics
+    auto physicsName = BambooGlobalVariables::Instance()->getPhysicsName();
+    if (physicsName.find("Physics") == std::string::npos) {
         auto physListFactory = new G4PhysListFactory();
-        G4VUserPhysicsList *physicsList = physListFactory->GetReferencePhysList(
-            BambooGlobalVariables::Instance()->getPhysicsName());
+        G4VUserPhysicsList *physicsList =
+            physListFactory->GetReferencePhysList(physicsName);
+        if (physicsList == 0) {
+            G4cerr << "The provided physics list [" << physicsName
+                   << "] is not found." << G4endl;
+            return 1;
+        }
         runManager->SetUserInitialization(physicsList);
     } else {
-        auto physicsList = BambooPhysicsFactory::create(
-            BambooGlobalVariables::Instance()->getPhysicsName(),
-            BambooGlobalVariables::Instance()->getPhysicsName());
+        auto physicsList =
+            BambooPhysicsFactory::create(physicsName, physicsName);
         runManager->SetUserInitialization(
             (G4VModularPhysicsList *)physicsList.release());
     }
@@ -107,12 +116,9 @@ int main(int argc, char *argv[]) {
 
     if (ui) {
         ui->SessionStart();
-        delete ui;
     }
 
     delete visManager;
-    delete runManager;
-    G4cout << "G4RunManager deleted." << G4endl;
     return 0;
 }
 
