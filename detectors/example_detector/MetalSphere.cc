@@ -32,6 +32,8 @@ G4bool MetalSphere::construct() {
         metal = G4Material::GetMaterial("G4_Cu");
     } else if (material_ == "stainless_steel") {
         metal = G4Material::GetMaterial("G4_STAINLESS-STEEL");
+    } else {
+        metal = G4Material::GetMaterial("G4_Au");
     }
     G4Sphere *metalSolid =
         new G4Sphere("MetalSolid", 0, radius_, 0, 2.0 * pi, 0, pi);
