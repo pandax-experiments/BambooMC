@@ -2,150 +2,147 @@
 
 #include <G4SystemOfUnits.hh>
 
-#include <QString>
 #include <map>
+#include <algorithm>
 
 namespace BambooUtils {
 
-static std::map<std::string, double> createUnitMap() {
-    std::map<std::string, double> uMap;
-    uMap["millimeter"] = millimeter;
-    uMap["millimeter2"] = millimeter2;
-    uMap["millimeter3"] = millimeter3;
-    uMap["centimeter"] = centimeter;
-    uMap["centimeter2"] = centimeter2;
-    uMap["centimeter3"] = centimeter3;
-    uMap["meter"] = meter;
-    uMap["meter2"] = meter2;
-    uMap["meter3"] = meter3;
-    uMap["kilometer"] = kilometer;
-    uMap["kilometer2"] = kilometer2;
-    uMap["kilometer3"] = kilometer3;
-    uMap["parsec"] = parsec;
-    uMap["micrometer"] = micrometer;
-    uMap["nanometer"] = nanometer;
-    uMap["angstrom"] = angstrom;
-    uMap["fermi"] = fermi;
-    uMap["barn"] = barn;
-    uMap["millibarn"] = millibarn;
-    uMap["microbarn"] = microbarn;
-    uMap["nanobarn"] = nanobarn;
-    uMap["picobarn"] = picobarn;
-    uMap["nm"] = nm;
-    uMap["um"] = um;
-    uMap["mm"] = mm;
-    uMap["mm2"] = mm2;
-    uMap["mm3"] = mm3;
-    uMap["cm"] = cm;
-    uMap["cm2"] = cm2;
-    uMap["cm3"] = cm3;
-    uMap["m"] = m;
-    uMap["m2"] = m2;
-    uMap["m3"] = m3;
-    uMap["km"] = km;
-    uMap["km2"] = km2;
-    uMap["km3"] = km3;
-    uMap["pc"] = pc;
-    uMap["radian"] = radian;
-    uMap["milliradian"] = milliradian;
-    uMap["degree"] = degree;
-    uMap["steradian"] = steradian;
-    uMap["rad"] = rad;
-    uMap["mrad"] = mrad;
-    uMap["sr"] = sr;
-    uMap["deg"] = deg;
-    uMap["nanosecond"] = nanosecond;
-    uMap["second"] = second;
-    uMap["millisecond"] = millisecond;
-    uMap["microsecond"] = microsecond;
-    uMap["picosecond"] = picosecond;
-    uMap["hertz"] = hertz;
-    uMap["kilohertz"] = kilohertz;
-    uMap["megahertz"] = megahertz;
-    uMap["ns"] = ns;
-    uMap["s"] = s;
-    uMap["ms"] = ms;
-    uMap["eplus"] = eplus;
-    uMap["e_SI"] = e_SI;
-    uMap["coulomb"] = coulomb;
-    uMap["megaelectronvolt"] = megaelectronvolt;
-    uMap["electronvolt"] = electronvolt;
-    uMap["kiloelectronvolt"] = kiloelectronvolt;
-    uMap["gigaelectronvolt"] = gigaelectronvolt;
-    uMap["teraelectronvolt"] = teraelectronvolt;
-    uMap["petaelectronvolt"] = petaelectronvolt;
-    uMap["joule"] = joule;
-    uMap["MeV"] = MeV;
-    uMap["eV"] = eV;
-    uMap["keV"] = keV;
-    uMap["GeV"] = GeV;
-    uMap["TeV"] = TeV;
-    uMap["PeV"] = PeV;
-    uMap["kilogram"] = kilogram;
-    uMap["gram"] = gram;
-    uMap["milligram"] = milligram;
-    uMap["kg"] = kg;
-    uMap["g"] = g;
-    uMap["mg"] = mg;
-    uMap["watt"] = watt;
-    uMap["newton"] = newton;
-    uMap["hep_pascal"] = hep_pascal;
-    uMap["bar"] = bar;
-    uMap["atmosphere"] = atmosphere;
-    uMap["ampere"] = ampere;
-    uMap["milliampere"] = milliampere;
-    uMap["microampere"] = microampere;
-    uMap["nanoampere"] = nanoampere;
-    uMap["megavolt"] = megavolt;
-    uMap["kilovolt"] = kilovolt;
-    uMap["volt"] = volt;
-    uMap["ohm"] = ohm;
-    uMap["farad"] = farad;
-    uMap["millifarad"] = millifarad;
-    uMap["microfarad"] = microfarad;
-    uMap["nanofarad"] = nanofarad;
-    uMap["picofarad"] = picofarad;
-    uMap["weber"] = weber;
-    uMap["tesla"] = tesla;
-    uMap["gauss"] = gauss;
-    uMap["kilogauss"] = kilogauss;
-    uMap["henry"] = henry;
-    uMap["kelvin"] = kelvin;
-    uMap["mole"] = mole;
-    uMap["becquerel"] = becquerel;
-    uMap["curie"] = curie;
-    uMap["candela"] = candela;
-    uMap["lumen"] = lumen;
-    uMap["lux"] = lux;
-    uMap["perCent"] = perCent;
-    uMap["perThousand"] = perThousand;
-    uMap["perMillion"] = perMillion;
-    return uMap;
-}
-
-static std::map<std::string, double> unitMap = BambooUtils::createUnitMap();
+std::map<std::string, double> unit_map{
+    {"millimeter", millimeter},
+    {"millimeter2", millimeter2},
+    {"millimeter3", millimeter3},
+    {"centimeter", centimeter},
+    {"centimeter2", centimeter2},
+    {"centimeter3", centimeter3},
+    {"meter", meter},
+    {"meter2", meter2},
+    {"meter3", meter3},
+    {"kilometer", kilometer},
+    {"kilometer2", kilometer2},
+    {"kilometer3", kilometer3},
+    {"parsec", parsec},
+    {"micrometer", micrometer},
+    {"nanometer", nanometer},
+    {"angstrom", angstrom},
+    {"fermi", fermi},
+    {"barn", barn},
+    {"millibarn", millibarn},
+    {"microbarn", microbarn},
+    {"nanobarn", nanobarn},
+    {"picobarn", picobarn},
+    {"nm", nm},
+    {"um", um},
+    {"mm", mm},
+    {"mm2", mm2},
+    {"mm3", mm3},
+    {"cm", cm},
+    {"cm2", cm2},
+    {"cm3", cm3},
+    {"m", m},
+    {"m2", m2},
+    {"m3", m3},
+    {"km", km},
+    {"km2", km2},
+    {"km3", km3},
+    {"pc", pc},
+    {"radian", radian},
+    {"milliradian", milliradian},
+    {"degree", degree},
+    {"steradian", steradian},
+    {"rad", rad},
+    {"mrad", mrad},
+    {"sr", sr},
+    {"deg", deg},
+    {"nanosecond", nanosecond},
+    {"second", second},
+    {"millisecond", millisecond},
+    {"microsecond", microsecond},
+    {"picosecond", picosecond},
+    {"hertz", hertz},
+    {"kilohertz", kilohertz},
+    {"megahertz", megahertz},
+    {"ns", ns},
+    {"s", s},
+    {"ms", ms},
+    {"eplus", eplus},
+    {"e_SI", e_SI},
+    {"coulomb", coulomb},
+    {"megaelectronvolt", megaelectronvolt},
+    {"electronvolt", electronvolt},
+    {"kiloelectronvolt", kiloelectronvolt},
+    {"gigaelectronvolt", gigaelectronvolt},
+    {"teraelectronvolt", teraelectronvolt},
+    {"petaelectronvolt", petaelectronvolt},
+    {"joule", joule},
+    {"MeV", MeV},
+    {"eV", eV},
+    {"keV", keV},
+    {"GeV", GeV},
+    {"TeV", TeV},
+    {"PeV", PeV},
+    {"kilogram", kilogram},
+    {"gram", gram},
+    {"milligram", milligram},
+    {"kg", kg},
+    {"g", g},
+    {"mg", mg},
+    {"watt", watt},
+    {"newton", newton},
+    {"hep_pascal", hep_pascal},
+    {"bar", bar},
+    {"atmosphere", atmosphere},
+    {"ampere", ampere},
+    {"milliampere", milliampere},
+    {"microampere", microampere},
+    {"nanoampere", nanoampere},
+    {"megavolt", megavolt},
+    {"kilovolt", kilovolt},
+    {"volt", volt},
+    {"ohm", ohm},
+    {"farad", farad},
+    {"millifarad", millifarad},
+    {"microfarad", microfarad},
+    {"nanofarad", nanofarad},
+    {"picofarad", picofarad},
+    {"weber", weber},
+    {"tesla", tesla},
+    {"gauss", gauss},
+    {"kilogauss", kilogauss},
+    {"henry", henry},
+    {"kelvin", kelvin},
+    {"mole", mole},
+    {"becquerel", becquerel},
+    {"curie", curie},
+    {"candela", candela},
+    {"lumen", lumen},
+    {"lux", lux},
+    {"perCent", perCent},
+    {"perThousand", perThousand},
+    {"perMillion", perMillion},
+};
 
 double evaluate(std::string str) {
-    std::string::size_type n = str.find("*");
-    double unit(0), value(0);
-    std::map<std::string, double>::iterator it;
+    str.erase(std::remove(str.begin(), str.end(), ' '), str.end());
+    auto n = str.find("*");
+    double unit{0};
     if (n != std::string::npos) {
-        it = unitMap.find(str.substr(n + 1));
-        if (it != unitMap.end()) {
+        auto it = unit_map.find(str.substr(n + 1));
+        if (it != unit_map.end()) {
             unit = it->second;
-        }
-        value = QString(str.substr(0, n).c_str()).toDouble() * unit;
-    } else {
-        if (str.c_str()[0] >= '0' && str.c_str()[0] <= '9') {
-            value = QString(str.substr(0, n).c_str()).toDouble();
         } else {
-            it = unitMap.find(str);
-            if (it != unitMap.end()) {
-                unit = it->second;
+            unit = 0;
+        }
+        return std::stod(str.substr(0, n)) * unit;
+    } else {
+        if (str[0] >= '0' && str[0] <= '9') {
+            return std::stod(str.substr(0, n));
+        } else {
+            auto it = unit_map.find(str);
+            if (it != unit_map.end()) {
+                return it->second;
             }
-            value = unit;
+            return 0;
         }
     }
-    return value;
 }
-}
+} // namespace BambooUtils

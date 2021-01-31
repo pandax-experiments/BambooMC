@@ -1,26 +1,69 @@
-#ifndef BAMBOOCONTROL_H
-#define BAMBOOCONTROL_H
+#pragma once
 
-#include <globals.hh>
+#include <type_traits>
+
+#include <map>
+#include <sstream>
+#include <string>
+
+
+class BambooParameters {
+public:
+    BambooParameters() = default;
+
+    template <typename Number>
+    typename std::enable_if<std::is_arithmetic<Number>::value, Number>::type
+    getParameter(const std::string &name) const {
+        Number v;
+        if (parameters.find(name) == parameters.end())
+            return 0;
+        std::istringstream ss(parameters.at(name));
+        ss >> v;
+        return v;
+    }
+
+    const std::string getParameter(const std::string &name) const;
+
+    double evaluateParameter(const std::string &name) const;
+
+    bool addParameter(const std::string &name, const std::string &value);
+
+    using par_maps = std::map<std::string, std::string>;
+    const par_maps &getParameters() const { return parameters; }
+
+  private:
+    std::map<std::string, std::string> parameters;
+};
 
 class BambooControl {
   public:
-    static BambooControl *getControl();
-
-    virtual ~BambooControl();
-
+    BambooControl() = default;
     void setup(int argc, char *argv[]);
 
-    static G4int DETECTOR_TYPE;
-    static G4bool INTERACTIVE;
-    static G4int NUM_EVENTS;
-    static G4String MacroFileName;
-    static G4String DataFileName;
-    static G4String XmlFileName;
+    bool isInterative() const { return interactive; }
+
+    int nEvents() const { return num_events; }
+
+    const std::string &getMacFileName() const { return mac_file_name; }
+    const std::string &getDataFileName() const { return data_file_name; }
+    const std::string &getConfigFileName() const { return config_file_name; }
 
   private:
-    BambooControl();
+    bool loadConfig(const std::string &config_name);
+    bool loadXmlConfig(const std::string &config_name);
+    bool interactive = false;
+    int num_events = 1;
+    int run_number = 1;
+    std::string mac_file_name;
+    std::string data_file_name;
+    std::string config_file_name;
 
-    static BambooControl *theControl;
+    std::string physicsName;
+    std::string generatorName;
+    std::string analysisName;
+
+    BambooParameters geometryParameters;
+    BambooParameters analysisParameters;
+    BambooParameters physicsParameters;
+    BambooParameters generatorParameters;
 };
-#endif
