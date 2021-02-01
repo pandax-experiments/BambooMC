@@ -48,6 +48,8 @@ class BambooControl {
     const std::string &getDataFileName() const { return data_file_name; }
     const std::string &getConfigFileName() const { return config_file_name; }
 
+    void print() const;
+
   private:
     bool loadConfig(const std::string &config_name);
     bool loadXmlConfig(const std::string &config_name);

@@ -9,4 +9,5 @@
 int main(int argc, char *argv[]) {
     BambooControl control;
     control.setup(argc, argv);
+    control.print();
 }

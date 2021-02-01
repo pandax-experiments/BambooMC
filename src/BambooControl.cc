@@ -51,7 +51,8 @@ void BambooControl::setup(int argc, char *argv[]) {
         case 'x':
             config_file_name = optarg;
             //            if (!bgv.loadXMLFile(config_file_name))
-            //                exit(1);
+            if(!loadConfig(config_file_name))
+                exit(1);
             break;
         case 'i':
             interactive = true;
@@ -118,6 +119,7 @@ void read_geometry(QXmlStreamReader &reader, BambooParameters &pars) {
         } else if (reader.name() == "material") {
             reader.skipCurrentElement();
         } else if (reader.name() == "detector") {
+            std::cout << "detector: " << extract_attributes(reader, "name") << std::endl;
             read_detector(reader);
         }
     }
@@ -159,6 +161,7 @@ bool BambooControl::loadXmlConfig(const std::string &config_name) {
     while (reader.readNextStartElement()) {
         if (reader.name() == "run") {
             run_number = std::stoi(extract_attributes(reader, "number"));
+            reader.skipCurrentElement();
         } else if (reader.name() == "geometry") {
             read_geometry(reader, geometryParameters);  
         } else if (reader.name() == "physics") {
@@ -175,4 +178,17 @@ bool BambooControl::loadXmlConfig(const std::string &config_name) {
         }
     }
     return true;
+}
+
+void BambooControl::print() const {
+    std::cout << "run: " << run_number << std::endl;
+    std::cout << "physics: " << physicsName << std::endl;
+    for (const auto & par: physicsParameters.getParameters()) {
+        std::cout << "physics parameter: " << par.first << " = " << par.second << std::endl;
+    }
+    std::cout << "generator: " << generatorName << std::endl;
+    std::cout << "analysis: " << analysisName << std::endl;
+    for (const auto & par: analysisParameters.getParameters()) {
+        std::cout << "analysis parameter: " << par.first << " = " << par.second << std::endl;
+    }
 }
