@@ -84,11 +84,13 @@ class BambooControl {
     std::string data_file_name;
     std::string config_file_name;
 
+    std::string materialName;
     std::string physicsName;
     std::string generatorName;
     std::string analysisName;
 
     BambooParameters geometryParameters;
+    BambooParameters materialParameters;
     BambooParameters analysisParameters;
     BambooParameters physicsParameters;
     BambooParameters generatorParameters;

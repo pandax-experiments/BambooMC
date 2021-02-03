@@ -1,6 +1,6 @@
 #include "BambooControl.hh"
-#include "BambooUtils.hh"
 #include "BambooDetectorConstruction.hh"
+#include "BambooUtils.hh"
 
 #include <algorithm>
 #include <iostream>
@@ -106,6 +106,16 @@ auto read_parameter(QXmlStreamReader &reader) {
     return parameter;
 }
 
+void read_entry(QXmlStreamReader &reader, BambooParameters &pars) {
+    while (reader.readNextStartElement()) {
+        if (reader.name() == "parameter") {
+            auto par = read_parameter(reader);
+            pars.addParameter(par.first, par.second);
+            reader.skipCurrentElement();
+        }
+    }
+}
+
 DetectorInfoTuple BambooControl::read_detector_xml(QXmlStreamReader &reader) {
     auto name = extract_attributes(reader, "name");
     auto type = extract_attributes(reader, "type");
@@ -132,7 +142,8 @@ void BambooControl::read_geometry_xml(QXmlStreamReader &reader) {
             geometryParameters.addParameter(par.first, par.second);
             reader.skipCurrentElement();
         } else if (reader.name() == "material") {
-            reader.skipCurrentElement();
+            materialName = extract_attributes(reader, "name");
+            read_entry(reader, materialParameters);
         } else if (reader.name() == "detector") {
             det_set.emplace(std::move(read_detector_xml(reader)));
         }
@@ -140,16 +151,6 @@ void BambooControl::read_geometry_xml(QXmlStreamReader &reader) {
     if (!sortDetectors(det_set)) {
         std::cerr << "invalid detector.." << std::endl;
         exit(1);
-    }
-}
-
-void read_entry(QXmlStreamReader &reader, BambooParameters &pars) {
-    while (reader.readNextStartElement()) {
-        if (reader.name() == "parameter") {
-            auto par = read_parameter(reader);
-            pars.addParameter(par.first, par.second);
-            reader.skipCurrentElement();
-        }
     }
 }
 
@@ -222,6 +223,10 @@ bool BambooControl::sortDetectors(std::set<DetectorInfoTuple> &ds) {
 
 void BambooControl::print() const {
     std::cout << "run: " << run_number << std::endl;
+
+    if (materialName != "") {
+        std::cout << "material: " << materialName << std::endl;
+    }
     for (const auto &di : detectorInfo) {
         const auto &name = std::get<0>(di);
         const auto &type = std::get<1>(di);
@@ -253,6 +258,8 @@ void BambooControl::print() const {
     }
 }
 
-G4VUserDetectorConstruction * BambooControl::createDetector() {
-    return new BambooDetectorConstruction{detectorInfo, detectorParameterMaps};
+G4VUserDetectorConstruction *BambooControl::createDetector() {
+    return new BambooDetectorConstruction{materialName, materialParameters,
+                                          geometryParameters, detectorInfo,
+                                          detectorParameterMaps};
 }

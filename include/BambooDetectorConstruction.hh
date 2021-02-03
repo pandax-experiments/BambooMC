@@ -10,14 +10,20 @@ class G4VPhysicalVolume;
 class BambooDetectorConstruction : public G4VUserDetectorConstruction {
   public:
     BambooDetectorConstruction(
-        const DetectorInfoVec &info,
+        const std::string &m_name, const BambooParameters &m_pars,
+        const BambooParameters &g_pars, const DetectorInfoVec &info,
         const std::map<std::string, BambooParameters> &pmaps)
-        : detectorInfo(info), detectorParameterMaps(pmaps) {}
+        : materialName(m_name), materialParameters(m_pars),
+          geometryParameters(g_pars), detectorInfo(info),
+          detectorParameterMaps(pmaps) {}
 
     virtual G4VPhysicalVolume *Construct();
 
   private:
-    //    void DefineMaterials();
+    void DefineMaterials();
+    const std::string materialName;
+    const BambooParameters &materialParameters;
+    const BambooParameters &geometryParameters;
     const DetectorInfoVec &detectorInfo;
     const std::map<std::string, BambooParameters> &detectorParameterMaps;
 

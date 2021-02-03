@@ -17,8 +17,7 @@
 
 G4VPhysicalVolume *BambooDetectorConstruction::Construct() {
     // define materials
-    //    DefineMaterials();
-    std::cout << "construct called!" << std::endl;
+    DefineMaterials();
     // read detectors
     using factory = DetectorFactory<std::string, BambooParameters>;
     G4VPhysicalVolume *world = nullptr;
@@ -43,11 +42,9 @@ G4VPhysicalVolume *BambooDetectorConstruction::Construct() {
     return world;
 }
 
-// void BambooDetectorConstruction::DefineMaterials() {
-//     BambooGlobalVariables *bgv = BambooGlobalVariables::Instance();
-//     if (bgv->getMaterialName() != "") {
-//         auto material = BambooMaterialFactory::create(bgv->getMaterialName(),
-//                                                       bgv->getMaterialName());
-//         material->defineMaterials();
-//     }
-// }
+void BambooDetectorConstruction::DefineMaterials() {
+    if (materialName != "") {
+        auto material = MaterialFactory::create(materialName);
+        material->defineMaterials(materialParameters);
+    }
+}
