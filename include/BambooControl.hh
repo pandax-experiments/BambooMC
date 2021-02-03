@@ -10,13 +10,12 @@
 #include <tuple>
 #include <vector>
 
-#include <G4VPhysicalVolume.hh>
-
-#include "detector/BambooDetector.hh"
 
 class QXmlStreamReader;
 
 class G4VUserDetectorConstruction;
+class G4VUserPhysicsList;
+class G4VUserPrimaryGeneratorAction;
 
 class BambooParameters {
   public:
@@ -67,7 +66,8 @@ class BambooControl {
     void print() const;
 
     G4VUserDetectorConstruction *createDetector();
-    //    G4VPhysicalVolume *constructDetector();
+    G4VUserPhysicsList *createPhysics();
+    G4VUserPrimaryGeneratorAction *createGenerator();
 
   private:
     bool loadConfig(const std::string &config_name);

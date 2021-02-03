@@ -1,5 +1,6 @@
 #include "BambooControl.hh"
 #include "BambooDetectorConstruction.hh"
+#include "BambooFactory.hh"
 #include "BambooUtils.hh"
 
 #include <algorithm>
@@ -9,6 +10,8 @@
 
 #include <QFile>
 #include <QXmlStreamReader>
+
+#include <G4VUserPhysicsList.hh>
 
 bool BambooParameters::addParameter(const std::string &name,
                                     const std::string &value) {
@@ -262,4 +265,27 @@ G4VUserDetectorConstruction *BambooControl::createDetector() {
     return new BambooDetectorConstruction{materialName, materialParameters,
                                           geometryParameters, detectorInfo,
                                           detectorParameterMaps};
+}
+
+#include <G4PhysListFactory.hh>
+
+G4VUserPhysicsList *BambooControl::createPhysics() {
+    if (physicsName.find("Physics") == std::string::npos) {
+        return (new G4PhysListFactory())->GetReferencePhysList(physicsName);
+    } else {
+        auto physicsList =
+            PhysicsFactory::create(physicsName, physicsParameters);
+        if (physicsList.get() == nullptr) {
+            return nullptr;
+        }
+        return static_cast<G4VUserPhysicsList *>(physicsList.release());
+    }
+}
+
+G4VUserPrimaryGeneratorAction *BambooControl::createGenerator() {
+    auto generator = GeneratorFactory::create(generatorName, generatorParameters);
+    if (generator.get() == nullptr) {
+        return nullptr;
+    }
+    return static_cast<G4VUserPrimaryGeneratorAction *>(generator.release());
 }

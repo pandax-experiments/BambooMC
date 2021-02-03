@@ -4,6 +4,7 @@
 #include <G4VUserDetectorConstruction.hh>
 
 #include "BambooControl.hh"
+#include "detector/BambooDetector.hh"
 
 class G4VPhysicalVolume;
 

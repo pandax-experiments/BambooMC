@@ -47,30 +47,19 @@ int main(int argc, char *argv[]) {
     runManager->SetUserInitialization(control.createDetector());
 
     // // initialize the physics
-    // auto physicsName = control.getGlobalVariables().getPhysicsName();
-    // if (physicsName.find("Physics") == std::string::npos) {
-    //     auto physListFactory = new G4PhysListFactory();
-    //     G4VUserPhysicsList *physicsList =
-    //         physListFactory->GetReferencePhysList(physicsName);
-    //     if (physicsList == 0) {
-    //         G4cerr << "The provided physics list [" << physicsName
-    //                << "] is not found." << G4endl;
-    //         return 1;
-    //     }
-    //     runManager->SetUserInitialization(physicsList);
-    // } else {
-    //     auto physicsList =
-    //         BambooPhysicsFactory::create(physicsName, physicsName);
-    //     runManager->SetUserInitialization(
-    //         (G4VModularPhysicsList *)physicsList.release());
-    // }
+    auto physicsList = control.createPhysics();
+    if (physicsList == nullptr) {
+        std::cerr << "incorrect physics list name" << std::endl;
+        return 1;
+    }
+    runManager->SetUserInitialization(physicsList);
 
-    // auto generator = BambooGeneratorFactory::create(
-    //     control.getGlobalVariables().getGeneratorName(),
-    //     control.getGlobalVariables().getGeneratorName());
-
-    // runManager->SetUserAction(
-    //     (G4VUserPrimaryGeneratorAction *)generator.release());
+    auto generator = control.createGenerator();
+    if (generator == nullptr) {
+        std::cerr << "incorrect generator name" << std::endl;
+        return 1;
+    }
+    runManager->SetUserAction(generator);
 
     // // analysis
     // auto analysis = BambooAnalysisFactory::create(

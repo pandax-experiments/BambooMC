@@ -1,18 +1,14 @@
-#ifndef BAMBOOGENERATOR_H
-#define BAMBOOGENERATOR_H
+#pragma once
 
 #include <G4VUserPrimaryGeneratorAction.hh>
-#include <globals.hh>
 
 class BambooGenerator : public G4VUserPrimaryGeneratorAction {
   public:
-    BambooGenerator(const G4String &name);
+    BambooGenerator(const BambooParameters &pars) : generatorParameters(pars) {};
 
-    virtual ~BambooGenerator() {}
-
-    G4String getName() const { return _name; }
+    virtual ~BambooGenerator() = default;
 
   protected:
-    G4String _name;
+    const BambooParameters &generatorParameters;
 };
-#endif
+

@@ -1,19 +1,14 @@
-#ifndef BAMBOOPHYSICS_H
-#define BAMBOOPHYSICS_H
+#pragma once
 
 #include <G4VModularPhysicsList.hh>
-#include <G4Version.hh>
-#include <globals.hh>
+
+#include "BambooControl.hh"
 
 class BambooPhysics : public G4VModularPhysicsList {
   public:
-    BambooPhysics(const G4String &name);
-
-    virtual ~BambooPhysics() {}
-
-    G4String getName() const { return _name; }
+    BambooPhysics(const BambooParameters &pars) : physicsParameters(pars) {}
+    virtual ~BambooPhysics() = default;
 
   protected:
-    G4String _name;
+    const BambooParameters &physicsParameters;
 };
-#endif
