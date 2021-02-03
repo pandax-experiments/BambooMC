@@ -2,6 +2,7 @@
 #include "BambooDetectorConstruction.hh"
 #include "BambooFactory.hh"
 #include "BambooUtils.hh"
+#include "analysis/BambooAnalysis.hh"
 
 #include <algorithm>
 #include <iostream>
@@ -11,6 +12,7 @@
 #include <QFile>
 #include <QXmlStreamReader>
 
+#include <G4PhysListFactory.hh>
 #include <G4VUserPhysicsList.hh>
 
 bool BambooParameters::addParameter(const std::string &name,
@@ -204,6 +206,8 @@ bool BambooControl::loadXmlConfig(const std::string &config_name) {
 
 bool BambooControl::sortDetectors(std::set<DetectorInfoTuple> &ds) {
     std::vector<std::string> names{{""}};
+    using factory = DetectorFactory<std::string, BambooParameters>;
+    auto detectorExist{true};
     while (!ds.empty()) {
         auto it = std::find_if(ds.cbegin(), ds.cend(),
                                [&names](const DetectorInfoTuple &t) {
@@ -216,12 +220,16 @@ bool BambooControl::sortDetectors(std::set<DetectorInfoTuple> &ds) {
             continue;
         }
         names.emplace_back(std::get<0>(*it));
+        if (detectorExist && !factory::exists(std::get<1>(*it))) {
+            std::cerr << "detector type " << std::get<1>(*it) << " does not exist! " << std::endl;
+            detectorExist = false;
+        }
         detectorInfo.emplace_back(std::move(*it));
         ds.erase(it);
     }
     if (!ds.empty())
         return false;
-    return true;
+    return detectorExist;
 }
 
 void BambooControl::print() const {
@@ -267,12 +275,13 @@ G4VUserDetectorConstruction *BambooControl::createDetector() {
                                           detectorParameterMaps};
 }
 
-#include <G4PhysListFactory.hh>
-
 G4VUserPhysicsList *BambooControl::createPhysics() {
     if (physicsName.find("Physics") == std::string::npos) {
         return (new G4PhysListFactory())->GetReferencePhysList(physicsName);
     } else {
+        if (!PhysicsFactory::exists(physicsName)) {
+            std::cout << physicsName << " does not exist!" << std::endl;
+        }
         auto physicsList =
             PhysicsFactory::create(physicsName, physicsParameters);
         if (physicsList.get() == nullptr) {
@@ -283,14 +292,14 @@ G4VUserPhysicsList *BambooControl::createPhysics() {
 }
 
 G4VUserPrimaryGeneratorAction *BambooControl::createGenerator() {
-    auto generator = GeneratorFactory::create(generatorName, generatorParameters);
+    auto generator =
+        GeneratorFactory::create(generatorName, generatorParameters);
     if (generator.get() == nullptr) {
         return nullptr;
     }
     return static_cast<G4VUserPrimaryGeneratorAction *>(generator.release());
 }
 
-#include "analysis/BambooAnalysis.hh"
 std::unique_ptr<BambooAnalysis> BambooControl::createAnalysis() {
     return AnalysisFactory::create(analysisName, analysisParameters);
 }

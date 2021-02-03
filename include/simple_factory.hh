@@ -16,6 +16,11 @@ template <typename Base, typename Key, typename... Ts> struct SimpleFactory {
         return iter->second(args...);
     }
 
+    // check if a give key exist
+    static bool exists(Key const &key) {
+        return get_map().find(key) != get_map().end();
+    }
+
     using map_type = std::unordered_map<Key, std::unique_ptr<Base> (*)(Ts...)>;
 
     // singleton to guarentee initialization in other translation units
