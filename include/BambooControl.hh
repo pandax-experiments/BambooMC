@@ -16,6 +16,7 @@ class QXmlStreamReader;
 class G4VUserDetectorConstruction;
 class G4VUserPhysicsList;
 class G4VUserPrimaryGeneratorAction;
+class BambooAnalysis;
 
 class BambooParameters {
   public:
@@ -68,6 +69,7 @@ class BambooControl {
     G4VUserDetectorConstruction *createDetector();
     G4VUserPhysicsList *createPhysics();
     G4VUserPrimaryGeneratorAction *createGenerator();
+    std::unique_ptr<BambooAnalysis> createAnalysis();
 
   private:
     bool loadConfig(const std::string &config_name);

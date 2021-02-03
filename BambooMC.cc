@@ -1,10 +1,8 @@
 #include <G4RunManager.hh>
-// #include <G4String.hh>
 
-// #include <G4PhysListFactory.hh>
 // #include <QBBC.hh>
 
-// #include <G4VisExecutive.hh>
+#include <G4VisExecutive.hh>
 
 #include <G4UIExecutive.hh>
 #include <G4UImanager.hh>
@@ -15,14 +13,8 @@
 #include <string>
 
 #include "BambooControl.hh"
+#include "analysis/BambooAnalysis.hh"
 
-/*
-#include "BambooDetectorConstruction.hh"
-#include "BambooGlobalVariables.hh"
-#include "analysis/BambooAnalysisFactory.hh"
-#include "generator/BambooGeneratorFactory.hh"
-#include "physics/BambooPhysicsFactory.hh"
-*/
 void usage(const char *exeName);
 
 int main(int argc, char *argv[]) {
@@ -61,59 +53,54 @@ int main(int argc, char *argv[]) {
     }
     runManager->SetUserAction(generator);
 
-    // // analysis
-    // auto analysis = BambooAnalysisFactory::create(
-    //     control.getGlobalVariables().getAnalysisName(),
-    //     control.getGlobalVariables().getAnalysisName());
+    auto analysis = control.createAnalysis();
+    if (analysis.get() == nullptr) {
+        std::cerr << "incorrect analysis name" << std::endl;
+        return 1;
+    }
 
-    // G4UserRunAction *runAction = analysis->getRunAction();
-    // G4UserEventAction *eventAction = analysis->getEventAction();
-    // G4UserSteppingAction *steppingAction = analysis->getSteppingAction();
-    // G4UserStackingAction *stackingAction = analysis->getStackingAction();
-    // G4UserTrackingAction *trackingAction = analysis->getTrackingAction();
+    auto runAction = analysis->getRunAction();
+    auto eventAction = analysis->getEventAction();
+    auto steppingAction = analysis->getSteppingAction();
+    auto stackingAction = analysis->getStackingAction();
+    auto trackingAction = analysis->getTrackingAction();
 
-    // if (runAction != nullptr) {
-    //     runManager->SetUserAction(runAction);
-    // }
-    // if (eventAction != nullptr) {
-    //     runManager->SetUserAction(eventAction);
-    // }
-    // if (steppingAction != nullptr) {
-    //     runManager->SetUserAction(steppingAction);
-    // }
-    // if (stackingAction != nullptr) {
-    //     runManager->SetUserAction(stackingAction);
-    // }
-    // if (trackingAction != nullptr) {
-    //     runManager->SetUserAction(trackingAction);
-    // }
+    if (runAction != nullptr) {
+        runManager->SetUserAction(runAction);
+    }
+    if (eventAction != nullptr) {
+        runManager->SetUserAction(eventAction);
+    }
+    if (steppingAction != nullptr) {
+        runManager->SetUserAction(steppingAction);
+    }
+    if (stackingAction != nullptr) {
+        runManager->SetUserAction(stackingAction);
+    }
+    if (trackingAction != nullptr) {
+        runManager->SetUserAction(trackingAction);
+    }
 
-    // runManager->Initialize();
-    // G4cout << "Run manager initialization done!" << G4endl;
-    // G4VisManager *visManager = new G4VisExecutive;
-    // visManager->Initialize();
-    // G4cout << "Visualization manager initialization done!" << G4endl;
-    // G4UImanager *uiManager = G4UImanager::GetUIpointer();
+    runManager->Initialize();
+    G4cout << "Run manager initialization done!" << G4endl;
+    auto visManager = std::make_unique<G4VisExecutive>();
+    visManager->Initialize();
+    G4cout << "Visualization manager initialization done!" << G4endl;
+    G4UImanager *uiManager = G4UImanager::GetUIpointer();
 
-    // if (!control.getMacFileName().empty()) {
-    //     G4String command = "/control/execute " + control.getMacFileName();
-    //     G4cout << command << G4endl;
-    //     uiManager->ApplyCommand(command);
-    // }
+    if (!control.getMacFileName().empty()) {
+        G4String command = "/control/execute " + control.getMacFileName();
+        G4cout << command << G4endl;
+        uiManager->ApplyCommand(command);
+    }
 
-    // if (!ui) {
-    //     std::ostringstream ss;
-    //     ss << control.nEvents();
-    //     G4String command = "/run/beamOn " + ss.str();
-    //     G4cout << command << G4endl;
-    //     uiManager->ApplyCommand(command);
-    // }
+    if (!ui) {
+        G4String command = "/run/beamOn " + std::to_string(control.nEvents());
+        uiManager->ApplyCommand(command);
+    } else {
+            ui->SessionStart();
+    }
 
-    // if (ui) {
-    //     ui->SessionStart();
-    // }
-
-    // delete visManager;
     return 0;
 }
 

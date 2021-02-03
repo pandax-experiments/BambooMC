@@ -289,3 +289,8 @@ G4VUserPrimaryGeneratorAction *BambooControl::createGenerator() {
     }
     return static_cast<G4VUserPrimaryGeneratorAction *>(generator.release());
 }
+
+#include "analysis/BambooAnalysis.hh"
+std::unique_ptr<BambooAnalysis> BambooControl::createAnalysis() {
+    return AnalysisFactory::create(analysisName, analysisParameters);
+}

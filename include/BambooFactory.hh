@@ -7,6 +7,7 @@
 
 #include "physics/BambooPhysics.hh"
 #include "generator/BambooGenerator.hh"
+#include "analysis/BambooAnalysis.hh"
 
 template <typename... Ts>
 using DetectorFactory = SimpleFactory<BambooDetector, std::string, Ts...>;
@@ -29,3 +30,8 @@ using GeneratorFactory = SimpleFactory<BambooGenerator, std::string, BambooParam
 template <typename DerivedGenerator>
 using GeneratorRegister =
     Register<BambooGenerator, std::string, DerivedGenerator, BambooGenerator>;
+
+using AnalysisFactory = SimpleFactory<BambooAnalysis, std::string, BambooParameters>;
+template <typename DerivedAnalysis>
+using AnalysisRegister =
+    Register<BambooAnalysis, std::string, DerivedAnalysis, BambooAnalysis>;

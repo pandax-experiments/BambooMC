@@ -1,7 +1,4 @@
-#ifndef BAMBOOANALYSIS_H
-#define BAMBOOANALYSIS_H
-
-#include <globals.hh>
+#pragma once
 
 class G4UserRunAction;
 class G4UserEventAction;
@@ -11,33 +8,31 @@ class G4UserStackingAction;
 
 class BambooAnalysis {
   public:
-    BambooAnalysis(const G4String &name);
+    BambooAnalysis();
 
     virtual ~BambooAnalysis() {}
 
-    G4String getName() const { return _name; }
+    G4UserRunAction *getRunAction() { return runAction; }
 
-    G4UserRunAction *getRunAction();
+    G4UserEventAction *getEventAction() { return eventAction; }
 
-    G4UserEventAction *getEventAction();
+    G4UserSteppingAction *getSteppingAction() { return steppingAction; }
 
-    G4UserSteppingAction *getSteppingAction();
+    G4UserStackingAction *getStackingAction() { return stackingAction; }
 
-    G4UserStackingAction *getStackingAction();
-
-    G4UserTrackingAction *getTrackingAction();
+    G4UserTrackingAction *getTrackingAction() { return trackingAction; }
 
   protected:
-    G4String _name;
+    const BambooParameters &analysisParameters;
 
-    G4UserRunAction *_runAction;
+    G4UserRunAction *runAction = nullptr;
 
-    G4UserEventAction *_eventAction;
+    G4UserEventAction *eventAction = nullptr;
 
-    G4UserSteppingAction *_steppingAction;
+    G4UserSteppingAction *steppingAction = nullptr;
 
-    G4UserStackingAction *_stackingAction;
+    G4UserStackingAction *stackingAction = nullptr;
 
-    G4UserTrackingAction *_trackingAction;
+    G4UserTrackingAction *trackingAction = nullptr;
 };
-#endif
+
