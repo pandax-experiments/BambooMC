@@ -3,12 +3,23 @@
 #include <type_traits>
 
 #include <map>
+#include <memory>
+#include <set>
 #include <sstream>
 #include <string>
+#include <tuple>
+#include <vector>
 
+#include <G4VPhysicalVolume.hh>
+
+#include "detector/BambooDetector.hh"
+
+class QXmlStreamReader;
+
+class G4VUserDetectorConstruction;
 
 class BambooParameters {
-public:
+  public:
     BambooParameters() = default;
 
     template <typename Number>
@@ -35,6 +46,9 @@ public:
     std::map<std::string, std::string> parameters;
 };
 
+using DetectorInfoTuple = std::tuple<std::string, std::string, std::string>;
+using DetectorInfoVec = std::vector<DetectorInfoTuple>;
+
 class BambooControl {
   public:
     BambooControl() = default;
@@ -48,11 +62,21 @@ class BambooControl {
     const std::string &getDataFileName() const { return data_file_name; }
     const std::string &getConfigFileName() const { return config_file_name; }
 
+    int getRunNumber() const { return run_number; }
+
     void print() const;
+
+    G4VUserDetectorConstruction *createDetector();
+    //    G4VPhysicalVolume *constructDetector();
 
   private:
     bool loadConfig(const std::string &config_name);
     bool loadXmlConfig(const std::string &config_name);
+    void read_geometry_xml(QXmlStreamReader &reader);
+    DetectorInfoTuple read_detector_xml(QXmlStreamReader &reader);
+
+    bool sortDetectors(std::set<DetectorInfoTuple> &set);
+
     bool interactive = false;
     int num_events = 1;
     int run_number = 1;
@@ -68,4 +92,7 @@ class BambooControl {
     BambooParameters analysisParameters;
     BambooParameters physicsParameters;
     BambooParameters generatorParameters;
+
+    DetectorInfoVec detectorInfo;
+    std::map<std::string, BambooParameters> detectorParameterMaps;
 };

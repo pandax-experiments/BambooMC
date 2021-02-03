@@ -60,14 +60,16 @@ if(ENABLE_DETECTOR_SETS)
   endforeach(DETECTOR_SET)
 endif(ENABLE_DETECTOR_SETS)
 
-add_library(BambooCore src/BambooControl.cc src/BambooUtils.cc)
-target_link_libraries(BambooCore ${QTLIB})
+add_library(BambooCore src/BambooControl.cc src/BambooUtils.cc src/BambooDetectorConstruction.cc)
+target_link_libraries(BambooCore ${QTLIB} ${Geant4_LIBRARIES})
 
 add_executable(test_detector_parameters test/test_detector_parameters.cc)
 target_link_libraries(test_detector_parameters BambooCore)
 
 add_executable(test_control test/test_control.cc)
 target_link_libraries(test_control BambooCore)
+
+add_executable(test_set test/test_set.cc)
 
 #----------------------------------------------------------------------------
 # Add the executable, and link it to the Geant4 libraries
@@ -93,11 +95,13 @@ target_link_libraries(test_control BambooCore)
 # target_link_libraries(BambooCore ${Geant4_LIBRARIES} ${QT_QTXML_LIBRARY})
 # set_target_properties(BambooCore PROPERTIES VERSION 0.1 SOVERSION 1)
 
-# add_executable(BambooMC BambooMC.cc)
+add_executable(BambooMC BambooMC.cc)
+target_link_libraries(BambooMC BambooCore ${Geant4_LIBRARIES})
 # target_link_libraries(BambooMC ${Geant4_LIBRARIES} ${ROOT_LIBRARIES} BambooDetector BambooPhysics BambooGenerator BambooAnalysis BambooCore)
 
 add_executable(parser src/parser.cc)
 target_link_libraries(parser Qt5::Core)
+
 
 #--- test related ---#
 #SET(BUILD_TEST OFF CACHE BOOL "whether the test programs will be built")

@@ -1,5 +1,4 @@
-#ifndef SIMPLE_FACTORY_HH_
-#define SIMPLE_FACTORY_HH_
+#pragma once
 
 // code borrowed from https://github.com/Enhex/Factory
 
@@ -38,5 +37,3 @@ struct Register {
         return std::make_unique<Derived>(args...);
     }
 };
-
-#endif // SIMPLE_FACTORY_HH_

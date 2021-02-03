@@ -1,14 +1,17 @@
 #include "BambooControl.hh"
 #include "BambooUtils.hh"
+#include "BambooDetectorConstruction.hh"
 
+#include <algorithm>
 #include <iostream>
+#include <memory>
 #include <unistd.h>
 
 #include <QFile>
 #include <QXmlStreamReader>
 
-
-bool BambooParameters::addParameter(const std::string &name, const std::string &value) {
+bool BambooParameters::addParameter(const std::string &name,
+                                    const std::string &value) {
     bool overwrite{false};
     if (parameters.find(name) != parameters.end())
         overwrite = true;
@@ -16,7 +19,8 @@ bool BambooParameters::addParameter(const std::string &name, const std::string &
     return overwrite;
 }
 
-const std::string BambooParameters::getParameter(const std::string &name) const {
+const std::string
+BambooParameters::getParameter(const std::string &name) const {
     if (parameters.find(name) != parameters.end())
         return parameters.at(name);
     return "";
@@ -51,7 +55,7 @@ void BambooControl::setup(int argc, char *argv[]) {
         case 'x':
             config_file_name = optarg;
             //            if (!bgv.loadXMLFile(config_file_name))
-            if(!loadConfig(config_file_name))
+            if (!loadConfig(config_file_name))
                 exit(1);
             break;
         case 'i':
@@ -62,7 +66,7 @@ void BambooControl::setup(int argc, char *argv[]) {
 
     if (config_file_name.empty()) {
         std::cerr << "A config file must be provided! Try '-x xml_file'."
-               << std::endl;
+                  << std::endl;
         exit(1);
     }
 
@@ -102,32 +106,46 @@ auto read_parameter(QXmlStreamReader &reader) {
     return parameter;
 }
 
-void read_detector(QXmlStreamReader &reader) {
+DetectorInfoTuple BambooControl::read_detector_xml(QXmlStreamReader &reader) {
+    auto name = extract_attributes(reader, "name");
+    auto type = extract_attributes(reader, "type");
+    auto parent = extract_attributes(reader, "parent");
+    if (name == "") {
+        name = type;
+    } else if (type == "") {
+        type = name;
+    }
+    detectorParameterMaps.emplace(name, BambooParameters{});
     while (reader.readNextStartElement()) {
-        std::cout << "detector parameter: "
-                  << extract_attributes(reader, "name") << std::endl;
+        auto par = read_parameter(reader);
+        detectorParameterMaps[name].addParameter(par.first, par.second);
         reader.skipCurrentElement();
     }
+    return std::make_tuple(name, type, parent);
 }
 
-void read_geometry(QXmlStreamReader &reader, BambooParameters &pars) {
-    while(reader.readNextStartElement()) {
-        if(reader.name() == "parameter") {
+void BambooControl::read_geometry_xml(QXmlStreamReader &reader) {
+    std::set<DetectorInfoTuple> det_set;
+    while (reader.readNextStartElement()) {
+        if (reader.name() == "parameter") {
             auto par = read_parameter(reader);
-            pars.addParameter(par.first, par.second);
+            geometryParameters.addParameter(par.first, par.second);
             reader.skipCurrentElement();
         } else if (reader.name() == "material") {
             reader.skipCurrentElement();
         } else if (reader.name() == "detector") {
-            std::cout << "detector: " << extract_attributes(reader, "name") << std::endl;
-            read_detector(reader);
+            det_set.emplace(std::move(read_detector_xml(reader)));
         }
+    }
+    if (!sortDetectors(det_set)) {
+        std::cerr << "invalid detector.." << std::endl;
+        exit(1);
     }
 }
 
 void read_entry(QXmlStreamReader &reader, BambooParameters &pars) {
-    while(reader.readNextStartElement()) {
-        if(reader.name() == "parameter") {
+    while (reader.readNextStartElement()) {
+        if (reader.name() == "parameter") {
             auto par = read_parameter(reader);
             pars.addParameter(par.first, par.second);
             reader.skipCurrentElement();
@@ -163,7 +181,7 @@ bool BambooControl::loadXmlConfig(const std::string &config_name) {
             run_number = std::stoi(extract_attributes(reader, "number"));
             reader.skipCurrentElement();
         } else if (reader.name() == "geometry") {
-            read_geometry(reader, geometryParameters);  
+            read_geometry_xml(reader);
         } else if (reader.name() == "physics") {
             physicsName = extract_attributes(reader, "name");
             read_entry(reader, physicsParameters);
@@ -180,15 +198,61 @@ bool BambooControl::loadXmlConfig(const std::string &config_name) {
     return true;
 }
 
+bool BambooControl::sortDetectors(std::set<DetectorInfoTuple> &ds) {
+    std::vector<std::string> names{{""}};
+    while (!ds.empty()) {
+        auto it = std::find_if(ds.cbegin(), ds.cend(),
+                               [&names](const DetectorInfoTuple &t) {
+                                   return std::get<2>(t) == names.back();
+                               });
+        if (it == ds.cend()) {
+            if (names.back() == "")
+                break;
+            names.pop_back();
+            continue;
+        }
+        names.emplace_back(std::get<0>(*it));
+        detectorInfo.emplace_back(std::move(*it));
+        ds.erase(it);
+    }
+    if (!ds.empty())
+        return false;
+    return true;
+}
+
 void BambooControl::print() const {
     std::cout << "run: " << run_number << std::endl;
+    for (const auto &di : detectorInfo) {
+        const auto &name = std::get<0>(di);
+        const auto &type = std::get<1>(di);
+        const auto &parent = std::get<2>(di);
+        std::cout << "detector: " << name << " (" << type << ")";
+        if (parent != "") {
+            std::cout << " (in " << parent << ")";
+        }
+        std::cout << std::endl;
+        if (detectorParameterMaps.find(name) != detectorParameterMaps.end()) {
+            const auto &pars = detectorParameterMaps.at(name);
+            for (const auto &par : pars.getParameters()) {
+                std::cout << " -- parameter: " << par.first << " = "
+                          << par.second << std::endl;
+            }
+        }
+    }
+
     std::cout << "physics: " << physicsName << std::endl;
-    for (const auto & par: physicsParameters.getParameters()) {
-        std::cout << "physics parameter: " << par.first << " = " << par.second << std::endl;
+    for (const auto &par : physicsParameters.getParameters()) {
+        std::cout << "physics parameter: " << par.first << " = " << par.second
+                  << std::endl;
     }
     std::cout << "generator: " << generatorName << std::endl;
     std::cout << "analysis: " << analysisName << std::endl;
-    for (const auto & par: analysisParameters.getParameters()) {
-        std::cout << "analysis parameter: " << par.first << " = " << par.second << std::endl;
+    for (const auto &par : analysisParameters.getParameters()) {
+        std::cout << "analysis parameter: " << par.first << " = " << par.second
+                  << std::endl;
     }
+}
+
+G4VUserDetectorConstruction * BambooControl::createDetector() {
+    return new BambooDetectorConstruction{detectorInfo, detectorParameterMaps};
 }

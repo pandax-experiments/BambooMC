@@ -1,7 +1,6 @@
 #include "BambooDetectorConstruction.hh"
-#include "BambooGlobalVariables.hh"
-#include "detector/BambooDetectorFactory.hh"
-#include "detector/BambooMaterialFactory.hh"
+#include "BambooFactory.hh"
+#include "detector/BambooDetector.hh"
 
 #include <G4GeometryManager.hh>
 #include <G4LogicalVolume.hh>
@@ -16,44 +15,39 @@
 #include <G4Box.hh>
 #include <G4PVPlacement.hh>
 
-BambooDetectorConstruction::BambooDetectorConstruction() {}
-
-BambooDetectorConstruction::~BambooDetectorConstruction() {}
-
 G4VPhysicalVolume *BambooDetectorConstruction::Construct() {
     // define materials
-    DefineMaterials();
-
+    //    DefineMaterials();
+    std::cout << "construct called!" << std::endl;
     // read detectors
-    using factory = BambooDetectorFactory;
-    BambooGlobalVariables *bgv = BambooGlobalVariables::Instance();
-    const vector<DetectorParameters> &dps = bgv->getDetectorParametersList();
-    G4VPhysicalVolume *world = 0;
-    for (size_t i = 0; i < dps.size(); ++i) {
-        const DetectorParameters &dp = dps[i];
-
-        // the detector part created by the factory method
-        // key is the type, and constructed with a unique name
-        auto bdp = factory::create(dp.getType(), dp.getDetectorPartName());
-        if (!dp.getParentName().empty()) {
-            BambooDetectorPart *parent =
-                bgv->findDetectorPart(dp.getParentName());
-            bdp->setParent(parent);
+    using factory = DetectorFactory<std::string, BambooParameters>;
+    G4VPhysicalVolume *world = nullptr;
+    for (const auto &di : detectorInfo) {
+        const auto &name = std::get<0>(di);
+        const auto &type = std::get<1>(di);
+        const auto &parent = std::get<2>(di);
+        auto pd = factory::create(type, name, detectorParameterMaps.at(name));
+        if (pd.get() == nullptr) {
+            std::cerr << "detector " << name << " is not properly registered!"
+                      << std::endl;
+            exit(1);
         }
-        bdp->construct();
-        if (dp.isWorldPart()) {
-            world = bdp->getPhysicalVolume();
+        if (parent == "") {
+            pd->construct();
+            world = pd->getMainPV();
+        } else {
+            pd->construct(detectorMap.at(parent).get());
         }
-        bgv->addDetectorPart(bdp.release());
+        detectorMap.emplace(name, std::move(pd));
     }
     return world;
 }
 
-void BambooDetectorConstruction::DefineMaterials() {
-    BambooGlobalVariables *bgv = BambooGlobalVariables::Instance();
-    if (bgv->getMaterialName() != "") {
-        auto material = BambooMaterialFactory::create(bgv->getMaterialName(),
-                                                      bgv->getMaterialName());
-        material->defineMaterials();
-    }
-}
+// void BambooDetectorConstruction::DefineMaterials() {
+//     BambooGlobalVariables *bgv = BambooGlobalVariables::Instance();
+//     if (bgv->getMaterialName() != "") {
+//         auto material = BambooMaterialFactory::create(bgv->getMaterialName(),
+//                                                       bgv->getMaterialName());
+//         material->defineMaterials();
+//     }
+// }
