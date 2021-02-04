@@ -13,7 +13,7 @@
 #include <string>
 
 #include "BambooControl.hh"
-#include "analysis/BambooAnalysis.hh"
+#include "BambooAnalysis.hh"
 
 void usage(const char *exeName);
 

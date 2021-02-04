@@ -2,7 +2,6 @@
 #include "BambooDetectorConstruction.hh"
 #include "BambooFactory.hh"
 #include "BambooUtils.hh"
-#include "analysis/BambooAnalysis.hh"
 
 #include <algorithm>
 #include <iostream>

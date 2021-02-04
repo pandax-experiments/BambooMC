@@ -1,6 +1,5 @@
 #include "BambooDetectorConstruction.hh"
 #include "BambooFactory.hh"
-#include "detector/BambooDetector.hh"
 
 #include <G4GeometryManager.hh>
 #include <G4LogicalVolume.hh>

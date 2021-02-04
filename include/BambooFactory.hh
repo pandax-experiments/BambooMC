@@ -2,12 +2,12 @@
 
 #include "simple_factory.hh"
 
-#include "detector/BambooDetector.hh"
-#include "detector/BambooMaterial.hh"
+#include "BambooDetector.hh"
+#include "BambooMaterial.hh"
 
-#include "physics/BambooPhysics.hh"
-#include "generator/BambooGenerator.hh"
-#include "analysis/BambooAnalysis.hh"
+#include "BambooPhysics.hh"
+#include "BambooGenerator.hh"
+#include "BambooAnalysis.hh"
 
 template <typename... Ts>
 using DetectorFactory = SimpleFactory<BambooDetector, std::string, Ts...>;
