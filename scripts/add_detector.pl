@@ -3,55 +3,52 @@
 use strict;
 use 5.010;
 use File::Path qw(make_path);
-say "Usage: $0 set_name detector_name" and die unless $#ARGV==1;
+say "Usage: $0 set_name detector_type" and die unless $#ARGV==1;
 
 my $set_name = $ARGV[0];
-my $detector_name = $ARGV[1];
+my $detector_type = $ARGV[1];
 
-say "creating new detector \"$detector_name\" in set \"$set_name\"";
+say "creating new detector \"$detector_type\" in set \"$set_name\"";
 
 
 # create the directory of set
 make_path("detectors/$set_name", {mode => 0755}) unless -d "detectors/$set_name";
 
-my $uc_name = $detector_name;
+my $uc_name = $detector_type;
 $uc_name =~ tr/a-z/A-Z/;
 
 my $sample_header = <<"EOF";
-#ifndef ${uc_name}_H
-#define ${uc_name}_H
+#pragma once
 
-#include "detector/BambooDetectorPart.hh"
-#include "detector/BambooDetectorFactory.hh"
+#include "BambooControl.hh"
+#include "BambooDetector.hh"
+#include "BambooFactory.hh"
 
-class $detector_name : public BambooDetectorPart
+class $detector_type : public BambooDetector
 {
 
 public:
 
-    $detector_name(const G4String &name);
+    $detector_type(const std::string &n, const BambooParameters &pars);
 
-    virtual G4bool construct();
+    virtual bool construct(BambooDetector *parent);
 
-    static DetectorRegister<$detector_name> reg;
+    static DetectorRegister<$detector_type, std::string, BambooParameters> reg;
 
 private:
-
     // define additional parameters here
 };
 
-#endif // ${uc_name}_H
 EOF
 
-open my $header, ">detectors/${set_name}/${detector_name}.hh"
+open my $header, ">detectors/${set_name}/${detector_type}.hh"
   or die "Can't open file: $!";
 
 print $header $sample_header;
 close $header;
 
 my $sample_source = <<"EOF";
-#include "$detector_name.hh"
-#include "BambooGlobalVariables.hh"
+#include "${detector_type}.hh"
 #include "BambooUtils.hh"
 
 #include <G4Material.hh>
@@ -60,26 +57,21 @@ my $sample_source = <<"EOF";
 #include <G4PVPlacement.hh>
 #include <G4VisAttributes.hh>
 
-DetectorRegister<$detector_name> ${detector_name}::reg("$detector_name");
+DetectorRegister<$detector_type, std::string, BambooParameters> ${detector_type}::reg("$detector_type");
 
-$detector_name::$detector_name (const G4String & name)
-  : BambooDetectorPart(name)
-{
-    // read parameters from the input xml file
-    DetectorParameters dp = BambooGlobalVariables::Instance()
-        ->findDetectorPartParameters("$detector_name");
-    G4cout << "$detector_name found..." << G4endl;
+${detector_type}::${detector_type} (const std::string &n, const BambooParameters &pars)
+  : BambooDetector(n, pars) {
+    G4cout << "$detector_type found..." << G4endl;
 }
 
-G4bool ${detector_name}::construct ()
-{
+bool ${detector_type}::construct (BambooDetector *parent) {
     // add construction code here
     return true;
 }
 
 EOF
 
-open my $source, ">detectors/${set_name}/${detector_name}.cc"
+open my $source, ">detectors/${set_name}/${detector_type}.cc"
   or die "Can't open file: $!";
 
 print $source $sample_source;
@@ -89,12 +81,12 @@ close $source;
 my $cmake_file = "detectors/${set_name}/sources.cmake";
 if ( -f $cmake_file ) {
   open my $fh_cmake, ">>$cmake_file" or die "Cannot open the cmake file: $!\n";
-  say $fh_cmake qq(set(Detector \$\{Detector\} \$\{source_path\}/${detector_name}.cc));
+  say $fh_cmake qq(set(Detector \$\{Detector\} \$\{source_path\}/${detector_type}.cc));
   close $fh_cmake;
 } else {
   open my $fh_cmake, ">$cmake_file" or die "Cannot open the cmake file: $!\n";
   say $fh_cmake qq(message("enable $set_name"));
   say $fh_cmake qq(set(source_path \$\{PROJECT_SOURCE_DIR\}/detectors/${set_name}));
-  say $fh_cmake qq(set(Detector \$\{Detector\} \$\{source_path\}/${detector_name}.cc));
+  say $fh_cmake qq(set(Detector \$\{Detector\} \$\{source_path\}/${detector_type}.cc));
   close $fh_cmake;
 }

@@ -7,8 +7,8 @@
 
 class BambooDetector {
   public:
-    BambooDetector(const std::string &n = "", const std::string &p = "")
-        : name{n}, parent{p} {};
+    BambooDetector(const std::string &n, const BambooParameters &pars)
+        : name{n}, parameters{pars} {};
 
     virtual ~BambooDetector() = default;
 
@@ -18,9 +18,9 @@ class BambooDetector {
     auto getMainPV() { return mainPV; }
     auto getContainerLV() { return containerLV; }
 
-  private:
+  protected:
     std::string name;
-    std::string parent;
+    const BambooParameters &parameters;
     G4LogicalVolume *mainLV = nullptr;
     G4LogicalVolume *containerLV = nullptr;
     G4VPhysicalVolume *mainPV = nullptr;

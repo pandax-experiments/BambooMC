@@ -42,16 +42,16 @@ include_directories(${PROJECT_SOURCE_DIR}/include)
 # Locate sources and headers for this project
 # NB: headers are included so they will show up in IDEs
 #
-file(GLOB sources ${PROJECT_SOURCE_DIR}/src/*.cc)
-file(GLOB headers ${PROJECT_SOURCE_DIR}/include/*.hh)
-file(GLOB Detector ${PROJECT_SOURCE_DIR}/src/detector/*.cc)
-file(GLOB Physics ${PROJECT_SOURCE_DIR}/src/physics/*.cc)
-file(GLOB Generator ${PROJECT_SOURCE_DIR}/src/generator/*.cc)
-file(GLOB Analysis ${PROJECT_SOURCE_DIR}/src/analysis/*.cc)
+#file(GLOB sources ${PROJECT_SOURCE_DIR}/src/*.cc)
+#file(GLOB headers ${PROJECT_SOURCE_DIR}/include/*.hh)
+#file(GLOB Detector ${PROJECT_SOURCE_DIR}/src/detector/*.cc)
+#file(GLOB Physics ${PROJECT_SOURCE_DIR}/src/physics/*.cc)
+#file(GLOB Generator ${PROJECT_SOURCE_DIR}/src/generator/*.cc)
+#file(GLOB Analysis ${PROJECT_SOURCE_DIR}/src/analysis/*.cc)
 
 
 # enable detector sets
-set(ENABLE_DETECTOR_SETS "" CACHE STRING "The detector sets to be enabled")
+set(ENABLE_DETECTOR_SETS "example" CACHE STRING "The detector sets to be enabled")
 if(ENABLE_DETECTOR_SETS)
   string(REPLACE "," ";" DETECTOR_SET_LIST ${ENABLE_DETECTOR_SETS})
   foreach(DETECTOR_SET ${DETECTOR_SET_LIST})
@@ -59,6 +59,9 @@ if(ENABLE_DETECTOR_SETS)
     include_directories(${PROJECT_SOURCE_DIR}/detectors/${DETECTOR_SET})
   endforeach(DETECTOR_SET)
 endif(ENABLE_DETECTOR_SETS)
+
+add_library(UserDetector ${Detector})
+target_link_libraries(UserDetector ${Geant4_LIBRARIES})
 
 add_library(BambooCore src/BambooControl.cc src/BambooUtils.cc src/BambooDetectorConstruction.cc)
 target_link_libraries(BambooCore ${QTLIB} ${Geant4_LIBRARIES})
@@ -96,7 +99,7 @@ add_executable(test_set test/test_set.cc)
 # set_target_properties(BambooCore PROPERTIES VERSION 0.1 SOVERSION 1)
 
 add_executable(BambooMC BambooMC.cc)
-target_link_libraries(BambooMC BambooCore ${Geant4_LIBRARIES})
+target_link_libraries(BambooMC BambooCore ${Geant4_LIBRARIES} UserDetector)
 # target_link_libraries(BambooMC ${Geant4_LIBRARIES} ${ROOT_LIBRARIES} BambooDetector BambooPhysics BambooGenerator BambooAnalysis BambooCore)
 
 add_executable(parser src/parser.cc)

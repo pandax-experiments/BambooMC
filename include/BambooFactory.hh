@@ -24,14 +24,14 @@ using MaterialRegister =
 using PhysicsFactory = SimpleFactory<BambooPhysics, std::string, BambooParameters>;
 template <typename DerivedPhysics>
 using PhysicsRegister =
-    Register<BambooPhysics, std::string, DerivedPhysics, BambooPhysics>;
+    Register<BambooPhysics, std::string, DerivedPhysics, BambooParameters>;
 
 using GeneratorFactory = SimpleFactory<BambooGenerator, std::string, BambooParameters>;
 template <typename DerivedGenerator>
 using GeneratorRegister =
-    Register<BambooGenerator, std::string, DerivedGenerator, BambooGenerator>;
+    Register<BambooGenerator, std::string, DerivedGenerator, BambooParameters>;
 
 using AnalysisFactory = SimpleFactory<BambooAnalysis, std::string, BambooParameters>;
 template <typename DerivedAnalysis>
 using AnalysisRegister =
-    Register<BambooAnalysis, std::string, DerivedAnalysis, BambooAnalysis>;
+    Register<BambooAnalysis, std::string, DerivedAnalysis, BambooParameters>;
