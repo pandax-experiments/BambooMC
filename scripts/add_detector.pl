@@ -12,7 +12,7 @@ say "creating new detector \"$detector_type\" in set \"$set_name\"";
 
 
 # create the directory of set
-make_path("detectors/$set_name", {mode => 0755}) unless -d "detectors/$set_name";
+make_path("user/detectors/$set_name", {mode => 0755}) unless -d "user/detectors/$set_name";
 
 my $uc_name = $detector_type;
 $uc_name =~ tr/a-z/A-Z/;
@@ -24,24 +24,22 @@ my $sample_header = <<"EOF";
 #include "BambooDetector.hh"
 #include "BambooFactory.hh"
 
-class $detector_type : public BambooDetector
-{
+class $detector_type : public BambooDetector {
 
-public:
-
+  public:
     $detector_type(const std::string &n, const BambooParameters &pars);
 
-    virtual bool construct(BambooDetector *parent);
+    virtual bool construct(const BambooParameters &global_pars, BambooDetector *parent);
 
     static DetectorRegister<$detector_type, std::string, BambooParameters> reg;
 
-private:
+  private:
     // define additional parameters here
 };
 
 EOF
 
-open my $header, ">detectors/${set_name}/${detector_type}.hh"
+open my $header, ">user/detectors/${set_name}/${detector_type}.hh"
   or die "Can't open file: $!";
 
 print $header $sample_header;
@@ -49,7 +47,6 @@ close $header;
 
 my $sample_source = <<"EOF";
 #include "${detector_type}.hh"
-#include "BambooUtils.hh"
 
 #include <G4Material.hh>
 #include <G4ThreeVector.hh>
@@ -61,24 +58,25 @@ DetectorRegister<$detector_type, std::string, BambooParameters> ${detector_type}
 
 ${detector_type}::${detector_type} (const std::string &n, const BambooParameters &pars)
   : BambooDetector(n, pars) {
-    G4cout << "$detector_type found..." << G4endl;
+    G4cout << "create detector $detector_type..." << G4endl;
 }
 
-bool ${detector_type}::construct (BambooDetector *parent) {
+bool ${detector_type}::construct (const BambooParameters &global_pars, BambooDetector *parent) {
     // add construction code here
+    using namespace CLHEP;
     return true;
 }
 
 EOF
 
-open my $source, ">detectors/${set_name}/${detector_type}.cc"
+open my $source, ">user/detectors/${set_name}/${detector_type}.cc"
   or die "Can't open file: $!";
 
 print $source $sample_source;
 close $source;
 
 # create the sources.cmake
-my $cmake_file = "detectors/${set_name}/sources.cmake";
+my $cmake_file = "user/detectors/${set_name}/sources.cmake";
 if ( -f $cmake_file ) {
   open my $fh_cmake, ">>$cmake_file" or die "Cannot open the cmake file: $!\n";
   say $fh_cmake qq(set(Detector \$\{Detector\} \$\{source_path\}/${detector_type}.cc));
@@ -86,7 +84,7 @@ if ( -f $cmake_file ) {
 } else {
   open my $fh_cmake, ">$cmake_file" or die "Cannot open the cmake file: $!\n";
   say $fh_cmake qq(message("enable $set_name"));
-  say $fh_cmake qq(set(source_path \$\{PROJECT_SOURCE_DIR\}/detectors/${set_name}));
+  say $fh_cmake qq(set(source_path \$\{PROJECT_SOURCE_DIR\}/user/detectors/${set_name}));
   say $fh_cmake qq(set(Detector \$\{Detector\} \$\{source_path\}/${detector_type}.cc));
   close $fh_cmake;
 }
