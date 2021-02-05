@@ -9,6 +9,6 @@ class BambooGenerator : public G4VUserPrimaryGeneratorAction {
     virtual ~BambooGenerator() = default;
 
   protected:
-    const BambooParameters &generatorParameters;
+    BambooParameters generatorParameters;
 };
 

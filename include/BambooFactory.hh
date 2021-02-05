@@ -2,6 +2,7 @@
 
 #include "simple_factory.hh"
 
+#include "BambooControl.hh"
 #include "BambooDetector.hh"
 #include "BambooMaterial.hh"
 

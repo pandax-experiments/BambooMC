@@ -1,5 +1,7 @@
 #pragma once
 
+#include "BambooControl.hh"
+
 class G4UserRunAction;
 class G4UserEventAction;
 class G4UserSteppingAction;
@@ -23,7 +25,7 @@ class BambooAnalysis {
     G4UserTrackingAction *getTrackingAction() { return trackingAction; }
 
   protected:
-    const BambooParameters &analysisParameters;
+    BambooParameters analysisParameters;
 
     G4UserRunAction *runAction = nullptr;
 

@@ -20,7 +20,7 @@ class BambooDetector {
 
   protected:
     std::string name;
-    const BambooParameters &parameters;
+    BambooParameters parameters;
     G4LogicalVolume *mainLV = nullptr;
     G4LogicalVolume *containerLV = nullptr;
     G4VPhysicalVolume *mainPV = nullptr;

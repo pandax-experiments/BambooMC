@@ -10,5 +10,5 @@ class BambooPhysics : public G4VModularPhysicsList {
     virtual ~BambooPhysics() = default;
 
   protected:
-    const BambooParameters &physicsParameters;
+    BambooParameters physicsParameters;
 };

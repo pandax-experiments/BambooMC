@@ -15,9 +15,9 @@
 #include <G4PVPlacement.hh>
 
 G4VPhysicalVolume *BambooDetectorConstruction::Construct() {
-    // define materials
+
     DefineMaterials();
-    // read detectors
+
     using factory = DetectorFactory<std::string, BambooParameters>;
     G4VPhysicalVolume *world = nullptr;
     for (const auto &di : detectorInfo) {

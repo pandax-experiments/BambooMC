@@ -58,51 +58,32 @@ if(ENABLE_DETECTOR_SETS)
     include(${PROJECT_SOURCE_DIR}/user/detectors/${DETECTOR_SET}/sources.cmake)
     include_directories(${PROJECT_SOURCE_DIR}/user/detectors/${DETECTOR_SET})
   endforeach(DETECTOR_SET)
-  add_library(UserDetector SHARED ${Detector})
-#  target_link_libraries(UserDetector ${Geant4_LIBRARIES})
+  add_library(UserDetector ${Detector})
+  target_link_libraries(UserDetector ${Geant4_LIBRARIES})
 endif(ENABLE_DETECTOR_SETS)
 
 
 add_library(BambooCore src/BambooControl.cc src/BambooUtils.cc src/BambooDetectorConstruction.cc)
 target_link_libraries(BambooCore ${QTLIB} ${Geant4_LIBRARIES})
 
+add_library(PandaXComponets src/PandaXPhysics.cc src/SimpleGPSGenerator.cc)
+target_link_libraries(PandaXComponets ${Geant4_LIBRARIES})
+
 add_executable(test_detector_parameters test/test_detector_parameters.cc)
 target_link_libraries(test_detector_parameters BambooCore)
 
 add_executable(test_control test/test_control.cc)
-target_link_libraries(test_control BambooCore)
+target_link_libraries(test_control "-Wl,--whole-archive" BambooCore PandaXComponets UserDetector "-Wl,--no-whole-archive")
 
 add_executable(test_set test/test_set.cc)
 
-#----------------------------------------------------------------------------
-# Add the executable, and link it to the Geant4 libraries
-#
-
-# add_library(BambooPhysics SHARED ${Physics})
-# target_link_libraries(BambooPhysics ${Geant4_LIBRARIES})
-# set_target_properties(BambooPhysics PROPERTIES VERSION 0.1 SOVERSION 1)
-
-# add_library(BambooGenerator SHARED ${Generator})
-# target_link_libraries(BambooGenerator ${Geant4_LIBRARIES})
-# set_target_properties(BambooGenerator PROPERTIES VERSION 0.1 SOVERSION 1)
-
-# add_library(BambooAnalysis SHARED ${Analysis})
-# target_link_libraries(BambooAnalysis ${Geant4_LIBRARIES})
-# set_target_properties(BambooAnalysis PROPERTIES VERSION 0.99 SOVERSION 1)
-
-# add_library(BambooDetector SHARED ${Detector})
-# target_link_libraries(BambooDetector ${Geant4_LIBRARIES} BambooAnalysis)
-# set_target_properties(BambooDetector PROPERTIES VERSION 0.1 SOVERSION 1)
-
-# add_library(BambooCore SHARED ${sources})
-# target_link_libraries(BambooCore ${Geant4_LIBRARIES} ${QT_QTXML_LIBRARY})
-# set_target_properties(BambooCore PROPERTIES VERSION 0.1 SOVERSION 1)
 
 add_executable(BambooMC BambooMC.cc)
 target_link_libraries(BambooMC ${Geant4_LIBRARIES} BambooCore)
+target_link_libraries(BambooMC "-Wl,--whole-archive" PandaXComponets "-Wl,--no-whole-archive")
 
 if(ENABLE_DETECTOR_SETS)
-  target_link_libraries(BambooMC UserDetector)
+  target_link_libraries(BambooMC "-Wl,--whole-archive" UserDetector "-Wl,--no-whole-archive")
 endif(ENABLE_DETECTOR_SETS)
 # target_link_libraries(BambooMC ${Geant4_LIBRARIES} ${ROOT_LIBRARIES} BambooDetector BambooPhysics BambooGenerator BambooAnalysis BambooCore)
 

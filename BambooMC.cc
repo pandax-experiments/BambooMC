@@ -12,8 +12,8 @@
 #include <sstream>
 #include <string>
 
-#include "BambooControl.hh"
 #include "BambooAnalysis.hh"
+#include "BambooControl.hh"
 
 void usage(const char *exeName);
 
@@ -48,37 +48,37 @@ int main(int argc, char *argv[]) {
 
     auto generator = control.createGenerator();
     if (generator == nullptr) {
-        std::cerr << "incorrect generator name" << std::endl;
+        G4cerr << "incorrect generator name" << G4endl;
         return 1;
     }
     runManager->SetUserAction(generator);
 
     auto analysis = control.createAnalysis();
     if (analysis.get() == nullptr) {
-        std::cerr << "incorrect analysis name" << std::endl;
-        return 1;
-    }
+        std::cerr << "no valid analysis provided." << std::endl;
+    } else {
 
-    auto runAction = analysis->getRunAction();
-    auto eventAction = analysis->getEventAction();
-    auto steppingAction = analysis->getSteppingAction();
-    auto stackingAction = analysis->getStackingAction();
-    auto trackingAction = analysis->getTrackingAction();
+        auto runAction = analysis->getRunAction();
+        auto eventAction = analysis->getEventAction();
+        auto steppingAction = analysis->getSteppingAction();
+        auto stackingAction = analysis->getStackingAction();
+        auto trackingAction = analysis->getTrackingAction();
 
-    if (runAction != nullptr) {
-        runManager->SetUserAction(runAction);
-    }
-    if (eventAction != nullptr) {
-        runManager->SetUserAction(eventAction);
-    }
-    if (steppingAction != nullptr) {
-        runManager->SetUserAction(steppingAction);
-    }
-    if (stackingAction != nullptr) {
-        runManager->SetUserAction(stackingAction);
-    }
-    if (trackingAction != nullptr) {
-        runManager->SetUserAction(trackingAction);
+        if (runAction != nullptr) {
+            runManager->SetUserAction(runAction);
+        }
+        if (eventAction != nullptr) {
+            runManager->SetUserAction(eventAction);
+        }
+        if (steppingAction != nullptr) {
+            runManager->SetUserAction(steppingAction);
+        }
+        if (stackingAction != nullptr) {
+            runManager->SetUserAction(stackingAction);
+        }
+        if (trackingAction != nullptr) {
+            runManager->SetUserAction(trackingAction);
+        }
     }
 
     runManager->Initialize();
@@ -98,7 +98,7 @@ int main(int argc, char *argv[]) {
         G4String command = "/run/beamOn " + std::to_string(control.nEvents());
         uiManager->ApplyCommand(command);
     } else {
-            ui->SessionStart();
+        ui->SessionStart();
     }
 
     return 0;
