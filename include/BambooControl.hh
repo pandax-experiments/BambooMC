@@ -10,7 +10,6 @@
 #include <tuple>
 #include <vector>
 
-
 class QXmlStreamReader;
 
 class G4VUserDetectorConstruction;
@@ -61,6 +60,7 @@ class BambooControl {
     const std::string &getMacFileName() const { return mac_file_name; }
     const std::string &getDataFileName() const { return data_file_name; }
     const std::string &getConfigFileName() const { return config_file_name; }
+    const std::string &getGdmlFileName() const { return gdml_file_name; }
 
     int getRunNumber() const { return run_number; }
 
@@ -85,6 +85,7 @@ class BambooControl {
     std::string mac_file_name;
     std::string data_file_name;
     std::string config_file_name;
+    std::string gdml_file_name;
 
     std::string materialName;
     std::string physicsName;

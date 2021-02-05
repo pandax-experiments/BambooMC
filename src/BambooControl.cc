@@ -40,7 +40,7 @@ void BambooControl::setup(int argc, char *argv[]) {
     extern char *optarg;
     std::stringstream ss;
     while (true) {
-        const int option = getopt(argc, argv, "m:n:o:c:x:i");
+        const int option = getopt(argc, argv, "m:n:o:c:x:ig:");
         if (option == -1)
             break;
         switch (option) {
@@ -58,18 +58,19 @@ void BambooControl::setup(int argc, char *argv[]) {
         case 'c':
         case 'x':
             config_file_name = optarg;
-            //            if (!bgv.loadXMLFile(config_file_name))
             if (!loadConfig(config_file_name))
                 exit(1);
             break;
         case 'i':
             interactive = true;
             break;
+        case 'g':
+            gdml_file_name = optarg;
         }
     }
 
     if (config_file_name.empty()) {
-        std::cerr << "A config file must be provided! Try '-x xml_file'."
+        std::cerr << "A config file must be provided! Try '-c config_file'."
                   << std::endl;
         exit(1);
     }

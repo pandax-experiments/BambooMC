@@ -1,11 +1,10 @@
 #include <G4RunManager.hh>
 
-// #include <QBBC.hh>
-
 #include <G4VisExecutive.hh>
 
 #include <G4UIExecutive.hh>
 #include <G4UImanager.hh>
+#include <G4GDMLParser.hh>
 
 #include <iostream>
 #include <memory>
@@ -83,6 +82,12 @@ int main(int argc, char *argv[]) {
 
     runManager->Initialize();
     G4cout << "Run manager initialization done!" << G4endl;
+    if (control.getGdmlFileName() != "") {
+        auto world = G4TransportationManager::GetTransportationManager()->GetNavigatorForTracking()->GetWorldVolume();
+        G4GDMLParser parser;
+        parser.Write(control.getGdmlFileName(), world);
+        return 0;
+    }
     auto visManager = std::make_unique<G4VisExecutive>();
     visManager->Initialize();
     G4cout << "Visualization manager initialization done!" << G4endl;
