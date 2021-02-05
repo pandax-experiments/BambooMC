@@ -12,7 +12,7 @@ class BambooDetector {
 
     virtual ~BambooDetector() = default;
 
-    virtual bool construct(BambooDetector *parent = nullptr) = 0;
+    virtual bool construct(const BambooParameters &global_pars, BambooDetector *parent = nullptr) = 0;
 
     auto getMainLV() { return mainLV; }
     auto getMainPV() { return mainPV; }

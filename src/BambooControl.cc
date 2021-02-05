@@ -209,7 +209,7 @@ bool BambooControl::sortDetectors(std::set<DetectorInfoTuple> &ds) {
     auto detectorExist{true};
     while (!ds.empty()) {
         auto it = std::find_if(ds.cbegin(), ds.cend(),
-                               [&names](const DetectorInfoTuple &t) {
+                               [&names](const auto &t) {
                                    return std::get<2>(t) == names.back();
                                });
         if (it == ds.cend()) {
@@ -219,8 +219,9 @@ bool BambooControl::sortDetectors(std::set<DetectorInfoTuple> &ds) {
             continue;
         }
         names.emplace_back(std::get<0>(*it));
-        if (detectorExist && !factory::exists(std::get<1>(*it))) {
-            std::cerr << "detector type " << std::get<1>(*it) << " does not exist! " << std::endl;
+        auto type = std::get<1>(*it);
+        if (detectorExist && !factory::exists(type)) {
+            std::cerr << "detector type " << type << " does not exist! " << std::endl;
             detectorExist = false;
         }
         detectorInfo.emplace_back(std::move(*it));

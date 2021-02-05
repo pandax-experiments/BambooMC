@@ -31,10 +31,10 @@ G4VPhysicalVolume *BambooDetectorConstruction::Construct() {
             exit(1);
         }
         if (parent == "") {
-            pd->construct();
+            pd->construct(geometryParameters);
             world = pd->getMainPV();
         } else {
-            pd->construct(detectorMap.at(parent).get());
+            pd->construct(geometryParameters, detectorMap.at(parent).get());
         }
         detectorMap.emplace(name, std::move(pd));
     }
