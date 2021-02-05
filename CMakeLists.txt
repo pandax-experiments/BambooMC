@@ -99,7 +99,7 @@ add_executable(test_set test/test_set.cc)
 # set_target_properties(BambooCore PROPERTIES VERSION 0.1 SOVERSION 1)
 
 add_executable(BambooMC BambooMC.cc)
-target_link_libraries(BambooMC BambooCore ${Geant4_LIBRARIES})
+target_link_libraries(BambooMC ${Geant4_LIBRARIES} BambooCore)
 
 if(ENABLE_DETECTOR_SETS)
   target_link_libraries(BambooMC UserDetector)
