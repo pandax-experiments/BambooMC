@@ -66,21 +66,21 @@ endif(ENABLE_DETECTOR_SETS)
 add_library(BambooCore src/BambooControl.cc src/BambooUtils.cc src/BambooDetectorConstruction.cc)
 target_link_libraries(BambooCore ${QTLIB} ${Geant4_LIBRARIES})
 
-add_library(PandaXComponets src/PandaXPhysics.cc src/SimpleGPSGenerator.cc)
-target_link_libraries(PandaXComponets ${Geant4_LIBRARIES})
+add_library(PandaXMC src/PandaXPhysics.cc src/SimpleGPSGenerator.cc src/GdmlLoader.cc)
+target_link_libraries(PandaXMC ${Geant4_LIBRARIES})
 
 add_executable(test_detector_parameters test/test_detector_parameters.cc)
 target_link_libraries(test_detector_parameters BambooCore)
 
 add_executable(test_control test/test_control.cc)
-target_link_libraries(test_control "-Wl,--whole-archive" BambooCore PandaXComponets UserDetector "-Wl,--no-whole-archive")
+target_link_libraries(test_control "-Wl,--whole-archive" BambooCore PandaXMC UserDetector "-Wl,--no-whole-archive")
 
 add_executable(test_set test/test_set.cc)
 
 
 add_executable(BambooMC BambooMC.cc)
 target_link_libraries(BambooMC ${Geant4_LIBRARIES} BambooCore)
-target_link_libraries(BambooMC "-Wl,--whole-archive" PandaXComponets "-Wl,--no-whole-archive")
+target_link_libraries(BambooMC "-Wl,--whole-archive" PandaXMC "-Wl,--no-whole-archive")
 
 if(ENABLE_DETECTOR_SETS)
   target_link_libraries(BambooMC "-Wl,--whole-archive" UserDetector "-Wl,--no-whole-archive")

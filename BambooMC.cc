@@ -85,7 +85,7 @@ int main(int argc, char *argv[]) {
     if (control.getGdmlFileName() != "") {
         auto world = G4TransportationManager::GetTransportationManager()->GetNavigatorForTracking()->GetWorldVolume();
         G4GDMLParser parser;
-        parser.Write(control.getGdmlFileName(), world);
+        parser.Write(control.getGdmlFileName(), world, false);
         return 0;
     }
     auto visManager = std::make_unique<G4VisExecutive>();
