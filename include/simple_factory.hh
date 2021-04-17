@@ -1,5 +1,4 @@
-#ifndef SIMPLE_FACTORY_HH_
-#define SIMPLE_FACTORY_HH_
+#pragma once
 
 // code borrowed from https://github.com/Enhex/Factory
 
@@ -15,6 +14,11 @@ template <typename Base, typename Key, typename... Ts> struct SimpleFactory {
             return nullptr;
         // call factory function
         return iter->second(args...);
+    }
+
+    // check if a give key exist
+    static bool exists(Key const &key) {
+        return get_map().find(key) != get_map().end();
     }
 
     using map_type = std::unordered_map<Key, std::unique_ptr<Base> (*)(Ts...)>;
@@ -38,5 +42,3 @@ struct Register {
         return std::make_unique<Derived>(args...);
     }
 };
-
-#endif // SIMPLE_FACTORY_HH_
