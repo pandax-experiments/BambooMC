@@ -34,6 +34,7 @@ void PandaXOpticalDataManager::book(const std::string &name) {
     mcTree->Branch("tLocal", &tLocal);
     mcTree->Branch("tProper", &tProper);
     mcTree->Branch("energy", &energy);
+    mcTree->Branch("velocity", &velocity);
     mcTree->Branch("ox", &ox);
     mcTree->Branch("oy", &oy);
     mcTree->Branch("oz", &oz);
@@ -100,4 +101,5 @@ void PandaXOpticalDataManager::resetData() {
     y.clear();
     z.clear();
     parent.clear();
+    velocity.clear();
 }
