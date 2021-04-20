@@ -1,7 +1,6 @@
 #include "PandaXOpticalHit.hh"
 
-G4Allocator<PandaXOpticalHit> *pandaXOpticalHitAllocator =
-    new G4Allocator<PandaXOpticalHit>;
+G4ThreadLocal G4Allocator<PandaXOpticalHit> *pandaXOpticalHitAllocator = nullptr;
 
 const PandaXOpticalHit &PandaXOpticalHit::
 operator=(const PandaXOpticalHit &right) {

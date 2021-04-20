@@ -150,7 +150,7 @@ void BambooControl::read_geometry_xml(QXmlStreamReader &reader) {
             materialName = extract_attributes(reader, "name");
             read_entry(reader, materialParameters);
         } else if (reader.name() == "detector") {
-            det_set.emplace(std::move(read_detector_xml(reader)));
+            det_set.emplace(read_detector_xml(reader));
         }
     }
     if (!sortDetectors(det_set)) {
@@ -255,7 +255,7 @@ void BambooControl::read_geometry_json(const json &j) {
             }
         } else if (el.key() == "detectors") {
             for (const auto &p : el.value()) {
-                det_set.emplace(std::move(read_detector_json(p)));
+                det_set.emplace(read_detector_json(p));
             }
         }
     }
@@ -349,7 +349,7 @@ void BambooControl::read_geometry_yaml(const YAML::Node &geo) {
             }
         } else if (key == "detectors") {
             for (const auto &d : it->second) {
-                det_set.emplace(std::move(read_detector_yaml(d)));
+                det_set.emplace(read_detector_yaml(d));
             }
         }
     }
