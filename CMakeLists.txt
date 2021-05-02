@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.12 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.5 FATAL_ERROR)
 project(BambooMC VERSION 1.99)
 
 # check for cxx compiler flag
@@ -38,7 +38,6 @@ endif()
 find_package(yaml-cpp 0.6 NO_MODULE)
 if(yaml-cpp_FOUND)
   message("found yaml-cpp version ${yaml-cpp_VERSION}")
-  add_compile_definitions(WITH_YAML_CPP)
   include_directories(${YAML_CPP_INCLUDE_DIR})
 endif()
 
@@ -73,6 +72,7 @@ endif(ENABLE_USER_MC)
 add_library(BambooCore src/BambooControl.cc src/BambooUtils.cc src/BambooDetectorConstruction.cc)
 target_link_libraries(BambooCore ${QTLIB} ${Geant4_LIBRARIES})
 if(yaml-cpp_FOUND)
+  target_compile_definitions(BambooCore PUBLIC WITH_YAML_CPP)
   target_link_libraries(BambooCore ${YAML_CPP_LIBRARIES})
 endif()
 
