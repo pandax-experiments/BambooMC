@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.5 FATAL_ERROR)
-project(BambooMC VERSION 1.99)
+project(BambooMC VERSION 2.0)
 
 # check for cxx compiler flag
 include(CheckCXXCompilerFlag)
