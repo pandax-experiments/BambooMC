@@ -16,8 +16,7 @@ void PandaXSteppingAction::UserSteppingAction(const G4Step *aStep) {
     }
     if (aTrack->GetTrackStatus() != fStopButAlive)
         return;
-    auto level = dynamic_cast<const G4Ions *>(def)->GetIsomerLevel();
-    if (level == 0 && def->GetIonLifeTime() > chainSplittingLifeTime) {
+    if (def->GetIonLifeTime() > chainSplittingLifeTime) {
         aTrack->SetTrackStatus(fPostponeToNextEvent);
         aTrack->SetGlobalTime(0.0 * second);
     }

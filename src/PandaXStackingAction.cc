@@ -35,8 +35,7 @@ PandaXStackingAction::ClassifyNewTrack(const G4Track *aTrack) {
     }
     if (aTrack->GetKineticEnergy() > 0.0)
         return fUrgent;
-    auto level = dynamic_cast<const G4Ions *>(def)->GetIsomerLevel();
-    if (level == 0 && def->GetIonLifeTime() > chainSplittingLifeTime) {
+    if (def->GetIonLifeTime() > chainSplittingLifeTime) {
         addTrack(aTrack);
         return fWaiting;
     }
