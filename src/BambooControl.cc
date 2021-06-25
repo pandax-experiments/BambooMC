@@ -351,6 +351,8 @@ void BambooControl::read_geometry_yaml(const YAML::Node &geo) {
             for (const auto &d : it->second) {
                 det_set.emplace(read_detector_yaml(d));
             }
+        } else if (key == "parameters") {
+            read_pars_yaml(it->second, geometryParameters);
         }
     }
     if (!sortDetectors(det_set)) {
@@ -433,6 +435,12 @@ void BambooControl::print() const {
     if (materialName != "") {
         std::cout << "material: " << materialName << std::endl;
     }
+
+    for (const auto &par : geometryParameters.getParameters()) {
+        std::cout << "global geometry parameter: " << par.first << " = "
+                  << par.second << std::endl;
+    }
+
     for (const auto &di : detectorInfo) {
         const auto &name = std::get<0>(di);
         const auto &type = std::get<1>(di);
@@ -476,7 +484,8 @@ G4VUserDetectorConstruction *BambooControl::createDetector() {
 
 G4VUserPhysicsList *BambooControl::createPhysics() {
     if (PhysicsFactory::exists(physicsName)) {
-        auto physicsList = PhysicsFactory::create(physicsName, physicsParameters);
+        auto physicsList =
+            PhysicsFactory::create(physicsName, physicsParameters);
         if (physicsList.get() == nullptr)
             return nullptr;
         return static_cast<G4VUserPhysicsList *>(physicsList.release());
