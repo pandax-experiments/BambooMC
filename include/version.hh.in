@@ -1,0 +1,6 @@
+// credit https://github.com/nocnokneo/cmake-git-versioning-example
+
+#ifndef BAMBOOMC_VERSION_H_
+#define BAMBOOMC_VERSION_H_
+#define BAMBOOMC_VERSION "@BAMBOOMC_VERSION@"
+#endif  /* BAMBOOMC_VERSION_H_ */

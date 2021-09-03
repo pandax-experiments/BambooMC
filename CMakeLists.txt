@@ -49,6 +49,7 @@ if(yaml-cpp_FOUND)
   include_directories(${YAML_CPP_INCLUDE_DIR})
 endif()
 
+
 # set include directories
 include_directories(${PROJECT_SOURCE_DIR}/include)
 
@@ -113,6 +114,15 @@ elseif(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   target_link_libraries(BambooMC "-Wl,-all_load" UserMC)
 endif()
 endif(ENABLE_USER_MC)
+
+find_package(Git)
+add_custom_target(version
+  ${CMAKE_COMMAND} -D SRC=${CMAKE_SOURCE_DIR}/include/version.hh.in
+                   -D DST=${CMAKE_SOURCE_DIR}/include/version.hh
+                   -D GIT_EXECUTABLE=${GIT_EXECUTABLE}
+                   -P ${CMAKE_SOURCE_DIR}/GenerateVersionHeader.cmake
+  )
+add_dependencies(BambooMC version)
 
 install(TARGETS BambooMC RUNTIME DESTINATION bin)
 install(DIRECTORY config/ DESTINATION share/bamboo-mc/config)

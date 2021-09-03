@@ -13,10 +13,13 @@
 
 #include "BambooAnalysis.hh"
 #include "BambooControl.hh"
+#include "version.hh"
 
 void usage(const char *exeName);
 
 int main(int argc, char *argv[]) {
+
+    G4cout << "Version: " << BAMBOOMC_VERSION << G4endl;
 
     BambooControl control;
 
