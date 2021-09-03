@@ -11,6 +11,8 @@ else()
   message(FATAL_ERROR "You need a compiler with at least standard c++11 support")
 endif()
 
+set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
+
 # geant4
 find_package(Geant4 REQUIRED ui_all vis_all)
 include(${Geant4_USE_FILE})
@@ -51,7 +53,29 @@ endif()
 
 
 # set include directories
-include_directories(${PROJECT_SOURCE_DIR}/include)
+include_directories(${PROJECT_SOURCE_DIR}/include ${CMAKE_CURRENT_BINARY_DIR})
+
+find_package(Git)
+if(GIT_FOUND AND EXISTS "${CMAKE_SOURCE_DIR}/.git")
+#    INCLUDE(GetGitRevisionDescription)
+    EXECUTE_PROCESS(COMMAND ${GIT_EXECUTABLE} describe --tags --dirty --always OUTPUT_VARIABLE SHORT_SHA OUTPUT_STRIP_TRAILING_WHITESPACE)
+
+    SET(REVISION ${SHORT_SHA} CACHE STRING "git short sha" FORCE)
+
+    # only use the plugin to tie the configure state to the sha to force rebuilds
+    # of files that depend on version.hh
+    include(GetGitRevisionDescription)
+    get_git_head_revision(REFSPEC COMMITHASH)
+
+else()
+    message(WARNING "Git not found, cannot set version info")
+
+    SET(REVISION "unknown")
+endif()
+  
+# generate version.h
+include_directories(${CMAKE_BINARY_DIR})
+configure_file("${CMAKE_SOURCE_DIR}/include/version.hh.in" "${CMAKE_BINARY_DIR}/version.hh" @ONLY)
 
 # enable detector sets
 set(ENABLE_DETECTOR_SETS "example" CACHE STRING "The detector sets to be enabled")
@@ -114,15 +138,6 @@ elseif(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   target_link_libraries(BambooMC "-Wl,-all_load" UserMC)
 endif()
 endif(ENABLE_USER_MC)
-
-find_package(Git)
-add_custom_target(version
-  ${CMAKE_COMMAND} -D SRC=${CMAKE_SOURCE_DIR}/include/version.hh.in
-                   -D DST=${CMAKE_SOURCE_DIR}/include/version.hh
-                   -D GIT_EXECUTABLE=${GIT_EXECUTABLE}
-                   -P ${CMAKE_SOURCE_DIR}/GenerateVersionHeader.cmake
-  )
-add_dependencies(BambooMC version)
 
 install(TARGETS BambooMC RUNTIME DESTINATION bin)
 install(DIRECTORY config/ DESTINATION share/bamboo-mc/config)
