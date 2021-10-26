@@ -78,9 +78,12 @@ bool CylinderOp::construct(const BambooParameters &, BambooDetector *parent) {
     auto vis = new G4VisAttributes(G4Colour(0.9, 1.0, 0.9, 0.8));
     containerLV->SetVisAttributes(vis);
 
-    auto sd = new PandaXOpticalSD("OpticalSD");
-    G4SDManager::GetSDMpointer()->AddNewDetector(sd);
-    mainLV->SetSensitiveDetector(sd);
+    auto optical_sd = new PandaXOpticalSD("OpticalSD");
+    G4SDManager::GetSDMpointer()->AddNewDetector(optical_sd);
+    mainLV->SetSensitiveDetector(optical_sd);
+    auto energy_sd = new PandaXOpticalSD("EnergySD", true);
+    G4SDManager::GetSDMpointer()->AddNewDetector(energy_sd);
+    containerLV->SetSensitiveDetector(energy_sd);
     return true;
 }
 
