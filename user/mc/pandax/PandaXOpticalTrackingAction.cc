@@ -1,5 +1,6 @@
 #include "PandaXOpticalTrackingAction.hh"
 #include "PandaXOpticalTrackInformation.hh"
+#include "PandaXTrackInformation.hh"
 
 #include <G4OpticalPhoton.hh>
 #include <G4Track.hh>
@@ -21,6 +22,10 @@ void PandaXOpticalTrackingAction::PostUserTrackingAction(const G4Track *aTrack) 
                     aTrack->GetParticleDefinition()->GetParticleName());
                 info->SetSourcePos(aTrack->GetPosition());
                 track->SetUserInformation(info);
+            } else {
+		auto info = new PandaXTrackInformation();
+		info->SetParent(aTrack->GetParticleDefinition()->GetParticleName());
+		track->SetUserInformation(info);
             }
         }
     }

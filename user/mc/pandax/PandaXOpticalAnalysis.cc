@@ -1,7 +1,8 @@
 #include "PandaXOpticalAnalysis.hh"
 
-#include "PandaXOpticalRunAction.hh"
+#include "PandaXOpticalDataManager.hh"
 #include "PandaXOpticalEventAction.hh"
+#include "PandaXOpticalRunAction.hh"
 #include "PandaXOpticalSteppingAction.hh"
 #include "PandaXOpticalTrackingAction.hh"
 
@@ -10,10 +11,18 @@ AnalysisRegister<PandaXOpticalAnalysis>
 
 PandaXOpticalAnalysis::PandaXOpticalAnalysis(const BambooParameters &pars)
     : BambooAnalysis{pars} {
-    auto sdName =analysisParameters.getParameter("sdName");
+    bool enable_energy_deposition = true;
+    if (analysisParameters.getParameters().find("EnableEnergyDeposition") !=
+        analysisParameters.getParameters().end())
+        enable_energy_deposition =
+            analysisParameters.getParameter<bool>("EnableEnergyDeposition");
 
-    runAction =
-        new PandaXOpticalRunAction(analysisParameters.getParameter("DataFileName"));
+    auto &dm = PandaXOpticalDataManager::getInstance();
+    dm.setRecordEnergyDeposition(enable_energy_deposition);
+    auto sdName = analysisParameters.getParameter("OpticalSdName");
+
+    runAction = new PandaXOpticalRunAction(
+        analysisParameters.getParameter("DataFileName"));
     eventAction = new PandaXOpticalEventAction();
 
     steppingAction = new PandaXOpticalSteppingAction(sdName);

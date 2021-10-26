@@ -18,7 +18,8 @@ class PandaXOpticalDataManager {
   private:
     PandaXOpticalDataManager() = default;
     PandaXOpticalDataManager(const PandaXOpticalDataManager &) = delete;
-    PandaXOpticalDataManager &operator=(const PandaXOpticalDataManager &) = delete;
+    PandaXOpticalDataManager &
+    operator=(const PandaXOpticalDataManager &) = delete;
 
   public:
     static PandaXOpticalDataManager &getInstance() {
@@ -34,9 +35,11 @@ class PandaXOpticalDataManager {
 
     void close();
 
+    void setRecordEnergyDeposition(bool t) { recordEnergyDeposition = t; }
+
     void fillEvent(const G4Event *aEvent);
 
-private:
+  private:
     void resetData();
 
     TFile *rootFile = nullptr;
@@ -60,4 +63,20 @@ private:
     std::vector<double> oy;
     std::vector<double> oz;
     std::vector<std::string> parent;
+
+    // variables related to energy deposition
+    int nEnergyHits;
+    double totalEnergy;
+    std::vector<int> trackId;
+    std::vector<int> parentId;
+    std::vector<std::string> type;
+    std::vector<std::string> parentType;
+    std::vector<std::string> volume;
+    std::vector<double> xd;
+    std::vector<double> yd;
+    std::vector<double> zd;
+    std::vector<double> td;
+    std::vector<double> hitEnergy;
+
+    bool recordEnergyDeposition = true;
 };

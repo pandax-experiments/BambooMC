@@ -1,5 +1,6 @@
 #include "PandaXOpticalDataManager.hh"
 #include "PandaXOpticalHit.hh"
+#include "PandaXEnergyDepositionHit.hh"
 
 #include <TTree.h>
 
@@ -39,6 +40,21 @@ void PandaXOpticalDataManager::book(const std::string &name) {
     mcTree->Branch("oy", &oy);
     mcTree->Branch("oz", &oz);
     mcTree->Branch("parent", &parent);
+
+    if (recordEnergyDeposition) {
+        mcTree->Branch("nEnergyHits", &nEnergyHits, "nEnergyHits/I");
+        mcTree->Branch("trackId", &trackId);
+        mcTree->Branch("parentId", &parentId);
+        mcTree->Branch("type", &type);
+        mcTree->Branch("parentType", &parentType);
+        mcTree->Branch("volume", &volume);
+        mcTree->Branch("totalEnergy", &totalEnergy);
+        mcTree->Branch("xd", &xd);
+        mcTree->Branch("yd", &yd);
+        mcTree->Branch("zd", &zd);
+        mcTree->Branch("td", &td);
+        mcTree->Branch("hitEnergy", &hitEnergy);
+    }
 }
 
 void PandaXOpticalDataManager::save() {
@@ -58,6 +74,31 @@ void PandaXOpticalDataManager::fillEvent(const G4Event *aEvent) {
     auto hCthis = aEvent->GetHCofThisEvent();
     int nHitCollections = hCthis->GetNumberOfCollections();
     resetData();
+    if (recordEnergyDeposition) {
+        for (int i = 0; i < nHitCollections; ++i) {
+            G4VHitsCollection *hitsCollection = hCthis->GetHC(i);
+            if (hitsCollection->GetName().contains("EnergyDepositionHits")) {
+                PandaXEnergyDepositionHitsCollection *hC =
+                    (PandaXEnergyDepositionHitsCollection *)hitsCollection;
+                for (size_t j = 0; j < hitsCollection->GetSize(); ++j) {
+                    PandaXEnergyDepositionHit *hit =
+                        (PandaXEnergyDepositionHit *)hC->GetHit(j);
+                    trackId.push_back(hit->getTrackId());
+                    parentId.push_back(hit->getParentId());
+                    type.push_back(hit->getType());
+		    parentType.push_back(hit->getParent());
+                    volume.push_back(hitsCollection->GetSDname());
+                    xd.push_back(hit->getX() / mm);
+                    yd.push_back(hit->getY() / mm);
+                    zd.push_back(hit->getZ() / mm);
+                    td.push_back(hit->getT() / s);
+                    hitEnergy.push_back(hit->getEnergy() / keV);
+                    totalEnergy += (hit->getEnergy()) / keV;
+                    nEnergyHits++;
+                }
+            }
+        }
+    }
     for (int i = 0; i < nHitCollections; ++i) {
         auto hC = hCthis->GetHC(i);
         if (hC->GetName().contains("OpticalHits")) {
@@ -102,4 +143,19 @@ void PandaXOpticalDataManager::resetData() {
     z.clear();
     parent.clear();
     velocity.clear();
+
+    if (recordEnergyDeposition) {
+        nEnergyHits = 0;
+        trackId.clear();
+        parentId.clear();
+        type.clear();
+        parentType.clear();
+        volume.clear();
+        totalEnergy = 0;
+        xd.clear();
+        yd.clear();
+        zd.clear();
+        td.clear();
+        hitEnergy.clear();
+    }    
 }
