@@ -24,4 +24,5 @@ generator:
 analysis:
   name: PandaXOpticalAnalysis
   parameters:
-    sdName: OpticalSD
+    EnableEnergyDeposition: 1
+    OpticalSdName: OpticalSD
