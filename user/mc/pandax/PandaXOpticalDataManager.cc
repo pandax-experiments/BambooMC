@@ -1,6 +1,6 @@
 #include "PandaXOpticalDataManager.hh"
-#include "PandaXOpticalHit.hh"
 #include "PandaXEnergyDepositionHit.hh"
+#include "PandaXOpticalHit.hh"
 
 #include <TTree.h>
 
@@ -40,6 +40,7 @@ void PandaXOpticalDataManager::book(const std::string &name) {
     mcTree->Branch("oy", &oy);
     mcTree->Branch("oz", &oz);
     mcTree->Branch("parent", &parent);
+    mcTree->Branch("photonParentId", &photonParentId);
 
     if (recordEnergyDeposition) {
         mcTree->Branch("nEnergyHits", &nEnergyHits, "nEnergyHits/I");
@@ -47,6 +48,7 @@ void PandaXOpticalDataManager::book(const std::string &name) {
         mcTree->Branch("parentId", &parentId);
         mcTree->Branch("type", &type);
         mcTree->Branch("parentType", &parentType);
+        mcTree->Branch("depositionProcess", &depositionProcess);
         mcTree->Branch("volume", &volume);
         mcTree->Branch("totalEnergy", &totalEnergy);
         mcTree->Branch("xd", &xd);
@@ -86,7 +88,8 @@ void PandaXOpticalDataManager::fillEvent(const G4Event *aEvent) {
                     trackId.push_back(hit->getTrackId());
                     parentId.push_back(hit->getParentId());
                     type.push_back(hit->getType());
-		    parentType.push_back(hit->getParent());
+                    parentType.push_back(hit->getParent());
+                    depositionProcess.push_back(hit->getDepositionProcess());
                     volume.push_back(hitsCollection->GetSDname());
                     xd.push_back(hit->getX() / mm);
                     yd.push_back(hit->getY() / mm);
@@ -119,6 +122,7 @@ void PandaXOpticalDataManager::fillEvent(const G4Event *aEvent) {
                 oy.push_back(hit->getSourcePos().y() / mm);
                 oz.push_back(hit->getSourcePos().z() / mm);
                 parent.push_back(hit->getParent());
+                photonParentId.push_back(hit->getParentId());
                 nHits++;
             }
         }
@@ -142,6 +146,7 @@ void PandaXOpticalDataManager::resetData() {
     y.clear();
     z.clear();
     parent.clear();
+    photonParentId.clear();
     velocity.clear();
 
     if (recordEnergyDeposition) {
@@ -151,11 +156,12 @@ void PandaXOpticalDataManager::resetData() {
         type.clear();
         parentType.clear();
         volume.clear();
+        depositionProcess.clear();
         totalEnergy = 0;
         xd.clear();
         yd.clear();
         zd.clear();
         td.clear();
         hitEnergy.clear();
-    }    
+    }
 }

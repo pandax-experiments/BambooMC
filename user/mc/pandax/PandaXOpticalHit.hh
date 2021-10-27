@@ -54,6 +54,9 @@ class PandaXOpticalHit : public G4VHit {
     void setParent(const std::string &s) { parent = s; }
     const std::string &getParent() { return parent; }
 
+    void setParentId(int n) { parentId = n; }
+    int getParentId() { return parentId; }
+
   private:
     int pmt_number = -1;
     G4ThreeVector pos = {0, 0, 0};
@@ -66,6 +69,7 @@ class PandaXOpticalHit : public G4VHit {
 
     G4ThreeVector source_pos = {0, 0, 0};
     string parent = "";
+    int parentId = -1;
 };
 
 using PandaXOpticalHitsCollection = G4THitsCollection<PandaXOpticalHit>;

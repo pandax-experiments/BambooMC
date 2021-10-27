@@ -63,6 +63,7 @@ class PandaXOpticalDataManager {
     std::vector<double> oy;
     std::vector<double> oz;
     std::vector<std::string> parent;
+    std::vector<int> photonParentId;
 
     // variables related to energy deposition
     int nEnergyHits;
@@ -72,6 +73,7 @@ class PandaXOpticalDataManager {
     std::vector<std::string> type;
     std::vector<std::string> parentType;
     std::vector<std::string> volume;
+    std::vector<std::string> depositionProcess;
     std::vector<double> xd;
     std::vector<double> yd;
     std::vector<double> zd;

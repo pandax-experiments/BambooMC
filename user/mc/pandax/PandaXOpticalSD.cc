@@ -27,7 +27,8 @@ G4bool PandaXOpticalSD::ProcessHits(G4Step *aStep, G4TouchableHistory *) {
         return false;
     }
     auto track = aStep->GetTrack();
-    if (track->GetParticleDefinition() == G4OpticalPhoton::OpticalPhotonDefinition())
+    if (track->GetParticleDefinition() ==
+        G4OpticalPhoton::OpticalPhotonDefinition())
         return false;
     G4double edep = aStep->GetTotalEnergyDeposit();
     if (edep == 0)
@@ -83,6 +84,7 @@ G4bool PandaXOpticalSD::ProcessHits_constStep(const G4Step *aStep,
     if (info) {
         hit->setSourcePos(info->GetSourcePos());
         hit->setParent(info->GetParent());
+        hit->setParentId(track->GetParentID());
     }
     opHitsCollection->insert(hit);
     return true;
