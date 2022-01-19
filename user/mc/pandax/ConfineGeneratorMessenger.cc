@@ -98,7 +98,8 @@ void ConfineGeneratorMessenger::SetNewValue(G4UIcommand *command,
     if (command == shapeCmd.get()) {
         myGen->setShape(newValues);
     } else if (command == confineCmd.get()) {
-        myGen->setConfineVolume(newValues);
+//        myGen->setConfineVolume(newValues);
+          myGen->ConfineSourceToVolume(newValues);
     }  else if (command == confineMaterialCmd.get()) {
         myGen->setConfineMaterial(newValues);
     } else if (command == particleCmd.get()) {

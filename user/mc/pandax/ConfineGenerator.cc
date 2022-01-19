@@ -64,9 +64,14 @@ void ConfineGenerator::ConfineSourceToVolume(G4String hVolumeList) {
         G4String hRequiredVolumeName = *pIt;
         G4bool bMatch = false;
 
-        if ((bMatch = (hRequiredVolumeName.last('*') >= 0)) != false)
-            hRequiredVolumeName =
-                hRequiredVolumeName.strip(G4String::trailing, '*');
+
+       if ( (hRequiredVolumeName.substr(hRequiredVolumeName.length()-1)).compare("*") == 0 )
+             { hRequiredVolumeName = hRequiredVolumeName.substr(0, hRequiredVolumeName.length()-1);
+               bMatch = true;
+             }
+ //       if ((bMatch = (hRequiredVolumeName.last('*') >= 0)) != false)
+//            hRequiredVolumeName =
+//                hRequiredVolumeName.strip(G4String::trailing, '*');
 
         G4bool bFoundOne = false;
         for (G4int iIndex = 0; iIndex < (G4int)PVStore->size(); iIndex++) {
@@ -97,8 +102,28 @@ void ConfineGenerator::ConfineSourceToVolume(G4String hVolumeList) {
         m_hVolumeNames.clear();
         m_bConfine = false;
     }
+    
+    int cou = 0;
+     
+    auto pvStore = G4PhysicalVolumeStore::GetInstance();
+    for (auto pv : *pvStore) {
+        auto name = pv->GetName();
+    for (auto pvreal = m_hVolumeNames.begin(); pvreal != m_hVolumeNames.end();
+         pvreal++) {
+        G4String s = *pvreal;
+        
+          if (s == name) {
+            confineVolume = s; 
+            cou = cou +1;
+   G4cout << "Confine volume " << s << " IS FOUND!" << G4endl;
+        }
+    }
+   }
+        if (cou == 0 ) 
+   G4cout << "Confine volume " << s << " is not found!" << G4endl;
 }
 
+/*
 
 void ConfineGenerator::setConfineVolume(const G4String &s) {
     // check confine
@@ -113,7 +138,7 @@ void ConfineGenerator::setConfineVolume(const G4String &s) {
     G4cout << "Confine volume " << s << " is not found!" << G4endl;
 }
 
-
+*/
 G4ThreeVector ConfineGenerator::GenerateRealPosition() {
       auto pos = GeneratePointsInVolume();
 

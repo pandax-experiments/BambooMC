@@ -29,8 +29,10 @@ class ConfineGenerator : public BambooGenerator {
 
         void setShape(const G4String &hShape) { m_hShape = hShape; }
     
-        void setConfineVolume(const G4String &v);
-
+   //     void setConfineVolume(const G4String &v);
+ 
+        void ConfineSourceToVolume(G4String);
+ 
         void setConfineMaterial(const G4String &v){ material = v;}
 
         void setParticle(const G4String &v){Particle = v;}
@@ -53,8 +55,6 @@ class ConfineGenerator : public BambooGenerator {
 
         const G4String &getShape() { return m_hShape; }
 
-        void ConfineSourceToVolume(G4String);
- 
         void SetParticleDefinition(G4ParticleDefinition *pParticleDefinition);
  
         inline void SetParticleCharge(G4double dCharge) {
