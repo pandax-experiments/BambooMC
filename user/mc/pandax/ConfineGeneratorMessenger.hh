@@ -42,5 +42,4 @@ class ConfineGeneratorMessenger : public G4UImessenger {
     G4int m_iIonCharge;
     G4double m_dIonExciteEnergy;
     G4ParticleTable *m_pParticleTable;
-
 };

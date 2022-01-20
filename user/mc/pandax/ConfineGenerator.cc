@@ -8,41 +8,36 @@
 #include <G4ParticleDefinition.hh>
 #include <G4IonTable.hh>
 #include <G4Ions.hh>
+#include <Randomize.hh>
 #include <G4TrackingManager.hh>
 #include <G4Track.hh>
-#include <Randomize.hh>
 
 #include "ConfineGenerator.hh"
 #include "ConfineGeneratorMessenger.hh"
 
 #include <exception>
 
-
 using namespace CLHEP;
 
- GeneratorRegister<ConfineGenerator> ConfineGenerator::reg("ConfineGenerator");
+GeneratorRegister<ConfineGenerator> ConfineGenerator::reg("ConfineGenerator");
 
- ConfineGenerator::ConfineGenerator(const BambooParameters &pars)
-    : BambooGenerator{pars}, messenger{new ConfineGeneratorMessenger(this)} {
+ConfineGenerator::ConfineGenerator(const BambooParameters &pars)
+    : BambooGenerator{ pars },
+      messenger{ new ConfineGeneratorMessenger(this) } {}
 
-}
+void ConfineGenerator::GeneratePrimaries(G4Event *anEvent) {
 
-void ConfineGenerator::GeneratePrimaries(G4Event *anEvent) {    
-   
-    auto pos = GenerateRealPosition();   
- 
+    auto pos = GenerateRealPosition();
+
     auto vertex = new G4PrimaryVertex(pos, 0);
-    
+
     G4PrimaryParticle *particle =
-            new G4PrimaryParticle(particleDefinitionVec[0], 0, 0, 0);
-        vertex->SetPrimary(particle);
-  
-   anEvent->AddPrimaryVertex(vertex);
+        new G4PrimaryParticle(particleDefinitionVec[0], 0, 0, 0);
+    vertex->SetPrimary(particle);
+
+    anEvent->AddPrimaryVertex(vertex);
 }
 
-
-
-//ConfineGenerator::~ConfineGenerator() { delete m_pMessenger; }
 
 void ConfineGenerator::ConfineSourceToVolume(G4String hVolumeList) {
     std::stringstream hStream;
@@ -65,14 +60,12 @@ void ConfineGenerator::ConfineSourceToVolume(G4String hVolumeList) {
         G4String hRequiredVolumeName = *pIt;
         G4bool bMatch = false;
 
-
-       if ( (hRequiredVolumeName.substr(hRequiredVolumeName.length()-1)).compare("*") == 0 )
-             { hRequiredVolumeName = hRequiredVolumeName.substr(0, hRequiredVolumeName.length()-1);
-               bMatch = true;
-             }
- //       if ((bMatch = (hRequiredVolumeName.last('*') >= 0)) != false)
-//            hRequiredVolumeName =
-//                hRequiredVolumeName.strip(G4String::trailing, '*');
+        if ((hRequiredVolumeName.substr(hRequiredVolumeName.length() - 1))
+                .compare("*") == 0) {
+            hRequiredVolumeName =
+                hRequiredVolumeName.substr(0, hRequiredVolumeName.length() - 1);
+            bMatch = true;
+        }
 
         G4bool bFoundOne = false;
         for (G4int iIndex = 0; iIndex < (G4int)PVStore->size(); iIndex++) {
@@ -92,8 +85,7 @@ void ConfineGenerator::ConfineSourceToVolume(G4String hVolumeList) {
     if (bFoundAll) {
         m_hVolumeNames = hActualVolumeNames;
         m_bConfine = true;
-  }
-  else if(m_hVolumeNames.empty()) {
+    } else if (m_hVolumeNames.empty()) {
         G4cout << "Empty confine volume list. :(" << G4endl;
         m_bConfine = false;
     } else {
@@ -103,25 +95,25 @@ void ConfineGenerator::ConfineSourceToVolume(G4String hVolumeList) {
         m_hVolumeNames.clear();
         m_bConfine = false;
     }
-    
+
     int cou = 0;
-     
+
     auto pvStore = G4PhysicalVolumeStore::GetInstance();
     for (auto pv : *pvStore) {
         auto name = pv->GetName();
-    for (auto pvreal = m_hVolumeNames.begin(); pvreal != m_hVolumeNames.end();
-         pvreal++) {
-        G4String s = *pvreal;
-        
-          if (s == name) {
-            confineVolume = s; 
-            cou = cou +1;
-   G4cout << "Confine volume " << s << " IS FOUND!" << G4endl;
+        for (auto pvreal = m_hVolumeNames.begin();
+             pvreal != m_hVolumeNames.end(); pvreal++) {
+            G4String s = *pvreal;
+
+            if (s == name) {
+                confineVolume = s;
+                cou = cou + 1;
+                G4cout << "Confine volume " << s << " IS FOUND!" << G4endl;
+            }
         }
     }
-   }
-        if (cou == 0 ) 
-   G4cout << "Confine volume " << s << " is not found!" << G4endl;
+    if (cou == 0)
+        G4cout << "Confine volume " << s << " is not found!" << G4endl;
 }
 
 void ConfineGenerator::ConfineSourceToMaterial(G4String material_confine) {
@@ -136,92 +128,68 @@ void ConfineGenerator::ConfineSourceToMaterial(G4String material_confine) {
     }
 
     // checks if the selected volumes exist and store all volumes that match
- //   G4LogicalVolumeStore *LVStore = G4LogicalVolumeStore::GetInstance();
+    //   G4LogicalVolumeStore *LVStore = G4LogicalVolumeStore::GetInstance();
     G4PhysicalVolumeStore *PVStore = G4PhysicalVolumeStore::GetInstance();
     G4bool bFoundAll = true;
     G4bool bFoundOne = false;
-  
+
     std::set<G4String> hNeedPVNames;
     for (auto pIt = m_hMaterialNames.begin(); pIt != m_hMaterialNames.end();
          pIt++) {
-         hMaterialName = *pIt;
-
-
-   /*   for (G4int iIndex = 0; iIndex < (G4int)LVStore->size(); iIndex++) {
-            G4String hLVMaterialName = (*LVStore)[iIndex]->GetMaterial()->GetName();
-          if (hMaterialName.compare(hLVMaterialName) == 0)
-         {  
-   */    for (G4int iIndex1 = 0; iIndex1 < (G4int)PVStore->size(); iIndex1++) {
-          if ( hMaterialName.compare ((*PVStore)[iIndex1]->GetLogicalVolume()->GetMaterial()->GetName()) == 0 )
-            {     G4String hPVName = (*PVStore)[iIndex1]->GetName();
+        hMaterialName = *pIt;
+    for (G4int iIndex1 = 0; iIndex1 < (G4int)PVStore->size(); iIndex1++) {
+if ( hMaterialName.compare ((*PVStore)[iIndex1]->GetLogicalVolume()->GetMaterial()->GetName()) == 0 ){    
+//        if (hMaterialName.compare((*PVStore)[iIndex1] ->GetLogicalVolume() ->GetMaterial() ->GetName()) == 0) {
+                G4String hPVName = (*PVStore)[iIndex1]->GetName();
                 hNeedPVNames.insert(hPVName);
                 bFoundOne = true;
-
-                }              
-             }
-           bFoundAll = bFoundAll && bFoundOne;
-   }
+            }
+        }
+        bFoundAll = bFoundAll && bFoundOne;
+    }
 
     if (bFoundAll) {
         m_hMaterialNames = hNeedPVNames;
         m_bConfine_Material = true;
-  }
-  else if(m_hMaterialNames.empty()) {
+    } else if (m_hMaterialNames.empty()) {
         G4cout << "Empty confine Material volume list. :(" << G4endl;
         m_bConfine_Material = false;
     } else {
-        G4cout << " **** Error: Confine Material --- One or more volumes do not exist **** "
-               << G4endl;
+        G4cout << " **** Error: Confine Material --- One or more volumes do "
+                  "not exist **** " << G4endl;
         G4cout << " Ignoring confine condition" << G4endl;
         m_hMaterialNames.clear();
         m_bConfine_Material = false;
     }
-    
+
     int cou = 0;
-     
+
     auto pvStore = G4PhysicalVolumeStore::GetInstance();
     for (auto pv : *pvStore) {
         auto name = pv->GetName();
-    for (auto pvreal = m_hMaterialNames.begin(); pvreal != m_hMaterialNames.end();
-         pvreal++) {
-        G4String s = *pvreal;
-        
-          if (s == name) {
-            confineVolume = s; 
-            cou = cou +1;
-   G4cout << "Confine volume " << s << " IS FOUND!" << G4endl;
+        for (auto pvreal = m_hMaterialNames.begin();
+             pvreal != m_hMaterialNames.end(); pvreal++) {
+            G4String s = *pvreal;
+
+            if (s == name) {
+                confineVolume = s;
+                cou = cou + 1;
+                G4cout << "Confine volume " << s << " IS FOUND!" << G4endl;
+            }
         }
     }
-   }
-        if (cou == 0 ) 
-   G4cout << "Confine volume " << s << " is not found!" << G4endl;
+    if (cou == 0)
+        G4cout << "Confine volume " << s << " is not found!" << G4endl;
 }
 
 
-
-/*
-
-void ConfineGenerator::setConfineVolume(const G4String &s) {
-    // check confine
-    auto pvStore = G4PhysicalVolumeStore::GetInstance();
-    for (auto pv : *pvStore) {
-        auto name = pv->GetName();
-        if (s == name) {
-            confineVolume = s;
-            return;
-        }
-    }
-    G4cout << "Confine volume " << s << " is not found!" << G4endl;
-}
-
-*/
 G4ThreeVector ConfineGenerator::GenerateRealPosition() {
-       if (m_hShape == "Point")
+    if (m_hShape == "Point")
         return m_hCenterCoords;
 
-      auto pos = GeneratePointsInVolume();
+    auto pos = GeneratePointsInVolume();
 
-     constexpr int max_count = 10000;
+    constexpr int max_count = 10000;
     int count = 0;
     while (count < max_count && !IsSourceConfined(pos)) {
         pos = GeneratePointsInVolume();
@@ -233,10 +201,7 @@ G4ThreeVector ConfineGenerator::GenerateRealPosition() {
     return pos;
 }
 
-
-
 G4ThreeVector ConfineGenerator::GeneratePointsInVolume() {
- 
 
     G4ThreeVector RandPos;
     G4double x = 0., y = 0., z = 0.;
@@ -262,7 +227,6 @@ G4ThreeVector ConfineGenerator::GeneratePointsInVolume() {
     RandPos.setZ(z);
     auto ParticlePosition = m_hCenterCoords + RandPos;
     return ParticlePosition;
-
 }
 
 G4bool ConfineGenerator::IsSourceConfined(const G4ThreeVector &pos) {
@@ -278,12 +242,12 @@ G4bool ConfineGenerator::IsSourceConfined(const G4ThreeVector &pos) {
     // Check m_hParticlePosition is within a volume in our list
     G4VPhysicalVolume *theVolume;
 
-    theVolume =
-        m_pNavigator->LocateGlobalPointAndSetup(pos, ptr, true);
+    theVolume = m_pNavigator->LocateGlobalPointAndSetup(pos, ptr, true);
     G4String theVolName = theVolume->GetName();
 
     std::set<G4String>::iterator pIt;
-    if ((pIt = m_hVolumeNames.find(theVolName)) != m_hVolumeNames.end() || (pIt = m_hMaterialNames.find(theVolName)) != m_hMaterialNames.end()) {
+    if ((pIt = m_hVolumeNames.find(theVolName)) != m_hVolumeNames.end() ||
+        (pIt = m_hMaterialNames.find(theVolName)) != m_hMaterialNames.end()) {
         return (true);
     } else
         return (false);
@@ -294,29 +258,3 @@ void ConfineGenerator::SetParticleDefinition(
     particleDefinitionVec.push_back(aParticleDefinition);
     m_dParticleCharge = particleDefinitionVec[0]->GetPDGCharge();
 }
-
-
-/*
-G4PrimaryVertex ConfineGenerator::GenerateVertex() {
-
-    m_hParticleMomentumDirection = G4ParticleMomentum(1., 0., 0.);
-    m_dParticleEnergy = 0.0 * MeV;
- 
-    auto pos = GenerateRealPosition();   
- 
-    auto vertex = new G4PrimaryVertex(pos, 0);
-    
-    G4double mass = particleDefinitionVec[0]->GetPDGMass();
-    G4double energy = m_dParticleEnergy + mass;
-    G4double pmom = std::sqrt(energy * energy - mass * mass);
-    G4double px = pmom * m_hParticleMomentumDirection.x();
-    G4double py = pmom * m_hParticleMomentumDirection.y();
-    G4double pz = pmom * m_hParticleMomentumDirection.z();
-
-    G4PrimaryParticle *particle =
-            new G4PrimaryParticle(particleDefinitionVec[0], px, py, pz);
-        vertex->SetPrimary(particle);
-    
-     return vertex;   
- }
-*/
