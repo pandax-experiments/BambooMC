@@ -33,7 +33,7 @@ class ConfineGenerator : public BambooGenerator {
  
         void ConfineSourceToVolume(G4String);
  
-        void setConfineMaterial(const G4String &v){ material = v;}
+        void ConfineSourceToMaterial(G4String);
 
         void setParticle(const G4String &v){Particle = v;}
    
@@ -72,7 +72,7 @@ class ConfineGenerator : public BambooGenerator {
     G4bool IsSourceConfined(const G4ThreeVector &pos);
  
  
-    G4String material;
+ //   G4String material_confine;
     G4String Particle;
     void GeneratePrimaryVertex(G4Event *pEvent);
     void GeneratePrimaryVertexFromTrack(G4Track *pTrack, G4Event *pEvent);
@@ -93,7 +93,9 @@ class ConfineGenerator : public BambooGenerator {
     G4double m_dHalfz;
     G4double m_dRadius;
     G4bool m_bConfine;
+    G4bool m_bConfine_Material;
     std::set<G4String> m_hVolumeNames;
+    std::set<G4String> m_hMaterialNames;
     G4double m_dMinTheta, m_dMaxTheta, m_dMinPhi, m_dMaxPhi;
     G4double m_dTheta, m_dPhi;
     G4double m_dMonoEnergy;

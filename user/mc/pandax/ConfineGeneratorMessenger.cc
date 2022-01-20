@@ -25,7 +25,7 @@ ConfineGeneratorMessenger::ConfineGeneratorMessenger(ConfineGenerator *gen)
     : myGen{ gen }, cgsDir{ new G4UIdirectory("/cgs/") },
       shapeCmd{ new G4UIcmdWithAString("/cgs/shape", this) },
       confineCmd{ new G4UIcmdWithAString("/cgs/confine", this) },
-      confineDir{ new G4UIdirectory("/cgs/conf") },
+      confineDir{ new G4UIdirectory("/cgs/conf/") },
       confineMaterialCmd{ new G4UIcmdWithAString("/cgs/conf/material", this) },
       particleCmd{ new G4UIcmdWithAString("/cgs/particle", this) },
       ionCmd{ new G4UIcommand("/cgs/ion", this) },
@@ -46,9 +46,12 @@ ConfineGeneratorMessenger::ConfineGeneratorMessenger(ConfineGenerator *gen)
     confineCmd->SetGuidance("Set confined detector of particle");
     confineCmd->SetParameterName("confine", false);
 
+
     confineDir->SetGuidance("Confine command sub directory");
     confineMaterialCmd->SetGuidance("Set confined material of particle");
     confineMaterialCmd->SetParameterName("confineMaterial", false);
+    confineMaterialCmd->SetCandidates("Teflon StainlessSteel Copper LXe GXe Quartz Kovar SS304LSteel Ceramic Cirlex Vacuum");
+
 
     particleCmd->SetGuidance("Set particle type");
     particleCmd->SetParameterName("particle", false);
@@ -101,7 +104,7 @@ void ConfineGeneratorMessenger::SetNewValue(G4UIcommand *command,
 //        myGen->setConfineVolume(newValues);
           myGen->ConfineSourceToVolume(newValues);
     }  else if (command == confineMaterialCmd.get()) {
-        myGen->setConfineMaterial(newValues);
+        myGen->ConfineSourceToMaterial(newValues);
     } else if (command == particleCmd.get()) {
         myGen->setParticle(newValues);
     } else if (command == centerCmd.get()) {
