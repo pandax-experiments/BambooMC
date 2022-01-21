@@ -1,13 +1,13 @@
 #pragma once
 
-#include <G4Navigator.hh>
-#include <G4ParticleDefinition.hh>
 #include "BambooFactory.hh"
 #include "BambooGenerator.hh"
 #include "ConfineGeneratorMessenger.hh"
+
+#include <G4ParticleDefinition.hh>
+
 #include <set>
 #include <vector>
-
 
 class ConfineGeneratorMessenger;
 
@@ -23,66 +23,60 @@ class ConfineGenerator : public BambooGenerator {
 
     static GeneratorRegister<ConfineGenerator> reg;
 
-    void setShape(const G4String &hShape) { m_hShape = hShape; }
+    void confineSourceToVolume(const G4String &v);
 
-    void ConfineSourceToVolume(G4String);
+    void confineSourceToMaterial(const G4String &m);
 
-    void ConfineSourceToMaterial(G4String);
+    void setParticleType(const G4String &t) { particle_type = t; }
 
-    void setParticle(const G4String &v) { Particle = v; }
+    void setShape(const G4String &hShape) { shape = hShape; }
 
     void setCenter(const G4ThreeVector &hCenterCoords) {
-        m_hCenterCoords = hCenterCoords;
+        center = hCenterCoords;
     }
 
-    void setRadius(G4double dRadius) { m_dRadius = dRadius; }
+    void setRadius(G4double dRadius) { radius = dRadius; }
 
-    void setHalfX(G4double dHalfx) { m_dHalfx = dHalfx; }
+    void setHalfX(G4double dHalfx) { halfx = dHalfx; }
 
-    void setHalfY(G4double dHalfy) { m_dHalfy = dHalfy; }
+    void setHalfY(G4double dHalfy) { halfy = dHalfy; }
 
-    void setHalfZ(G4double dHalfz) { m_dHalfz = dHalfz; }
+    void setHalfZ(G4double dHalfz) { halfz = dHalfz; }
 
-    void setEnergy(G4double energy) { m_dMonoEnergy = energy; }
+    void setEnergy(G4double energy) { monoEnergy = energy; }
 
-    G4double GetParticleEnergy() const { return m_dParticleEnergy; }
-
-    const G4ThreeVector &GetParticlePosition() { return m_hParticlePosition; }
-
-    const G4String &getShape() { return m_hShape; }
-
-    void SetParticleDefinition(G4ParticleDefinition *pParticleDefinition);
-
-    inline void SetParticleCharge(G4double dCharge) {
-        m_dParticleCharge = dCharge;
+    void setParticleDefinition(G4ParticleDefinition *def) {
+        particle_definition = def;
     }
 
+    G4double getParticleEnergy() const { return particle_energy; }
+
+    const G4ThreeVector &getParticlePosition() { return particle_position; }
+
+    const G4String &getShape() { return shape; }
 
   private:
     G4String confineVolume;
-    G4ThreeVector GenerateRealPosition();
-    G4ThreeVector GeneratePointsInVolume();
-    G4bool IsSourceConfined(const G4ThreeVector &pos);
+    G4ThreeVector generateRealPosition();
+    G4ThreeVector generatePointsInVolume();
+    G4bool isSourceConfined(const G4ThreeVector &pos);
+
+    // class member variables
     std::unique_ptr<ConfineGeneratorMessenger> messenger;
-    G4Navigator *m_pNavigator;
 
-    G4String Particle;
+    G4String particle_type;
+    G4String shape;
+    G4ThreeVector center = {0, 0, 0};
+    G4double halfx;
+    G4double halfy;
+    G4double halfz;
+    G4double radius;
+    G4double monoEnergy;
+    G4bool confine;
+    G4bool confine_material;
+    std::set<G4String> volume_names;
 
-    G4String m_hShape;
-    G4ThreeVector m_hCenterCoords;
-    G4double m_dHalfx;
-    G4double m_dHalfy;
-    G4double m_dHalfz;
-    G4double m_dRadius;
-    G4double m_dMonoEnergy;
-    G4bool m_bConfine;
-    G4bool m_bConfine_Material;
-    std::set<G4String> m_hVolumeNames;
-    std::set<G4String> m_hMaterialNames;
-
-    std::vector<G4ParticleDefinition *> particleDefinitionVec;
-    G4double m_dParticleEnergy;
-    G4double m_dParticleCharge;
-    G4ThreeVector m_hParticlePosition;
-
+    G4ParticleDefinition *particle_definition;
+    G4double particle_energy;
+    G4ThreeVector particle_position;
 };

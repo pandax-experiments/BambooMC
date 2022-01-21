@@ -49,9 +49,6 @@ ConfineGeneratorMessenger::ConfineGeneratorMessenger(ConfineGenerator *gen)
     confineDir->SetGuidance("Confine command sub directory");
     confineMaterialCmd->SetGuidance("Set confined material of particle");
     confineMaterialCmd->SetParameterName("confineMaterial", false);
-    confineMaterialCmd->SetCandidates("Teflon StainlessSteel Copper LXe GXe "
-                                      "Quartz Kovar SS304LSteel Ceramic Cirlex "
-                                      "Vacuum");
 
     particleCmd->SetGuidance("Set particle type");
     particleCmd->SetParameterName("particle", false);
@@ -101,11 +98,11 @@ void ConfineGeneratorMessenger::SetNewValue(G4UIcommand *command,
     if (command == shapeCmd.get()) {
         myGen->setShape(newValues);
     } else if (command == confineCmd.get()) {
-        myGen->ConfineSourceToVolume(newValues);
+        myGen->confineSourceToVolume(newValues);
     } else if (command == confineMaterialCmd.get()) {
-        myGen->ConfineSourceToMaterial(newValues);
+        myGen->confineSourceToMaterial(newValues);
     } else if (command == particleCmd.get()) {
-        myGen->setParticle(newValues);
+        myGen->setParticleType(newValues);
     } else if (command == centerCmd.get()) {
         myGen->setCenter(centerCmd->GetNew3VectorValue(newValues));
     } else if (command == radiusCmd.get()) {
@@ -122,20 +119,17 @@ void ConfineGeneratorMessenger::SetNewValue(G4UIcommand *command,
         G4Tokenizer next(newValues);
 
         // check argument
-        atomicNumber = StoI(next());
-        atomicMass = StoI(next());
-        ionCharge = atomicNumber;
-
-        G4ParticleDefinition *ion;
+        auto atomicNumber = StoI(next());
+        auto atomicMass = StoI(next());
 
         auto particleTable = G4ParticleTable::GetParticleTable();
-        ion = particleTable->GetIonTable()->GetIon(atomicNumber, atomicMass, 0);
+        auto ion =
+            particleTable->GetIonTable()->GetIon(atomicNumber, atomicMass, 0);
         if (ion == nullptr) {
             G4cerr << "Ion with Z = " << atomicNumber;
             G4cerr << ", A = " << atomicMass << " is not be defined" << G4endl;
         } else {
-            myGen->SetParticleDefinition(ion);
-            myGen->SetParticleCharge(ionCharge * eplus);
+            myGen->setParticleDefinition(ion);
         }
     } else {
         G4cerr << "Not implemented: " << command->GetCommandPath() << G4endl;
