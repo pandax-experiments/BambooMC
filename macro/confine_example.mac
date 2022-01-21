@@ -1,0 +1,13 @@
+/cgs/particle ion
+/cgs/ion 92 238
+/cgs/shape Box
+# uncomment following line to confine to materials
+#/cgs/conf/material G4_STAINLESS-STEEL G4_lXe
+
+# uncomment following line to confine to physical volume(s) with wildcard
+#/cgs/confine SampleSteelCont*
+
+/cgs/halfx 0.3 m
+/cgs/halfy 0.3 m
+/cgs/halfz 0.1 m
+/cgs/centre 0 0 1 m
