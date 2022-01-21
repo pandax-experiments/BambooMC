@@ -37,9 +37,8 @@ class ConfineGeneratorMessenger : public G4UImessenger {
     std::unique_ptr<G4UIcmdWithADoubleAndUnit> halfZCmd;
     std::unique_ptr<G4UIcmdWithADoubleAndUnit> energyCmd;
 
-    G4int m_iAtomicNumber;
-    G4int m_iAtomicMass;
-    G4int m_iIonCharge;
-    G4double m_dIonExciteEnergy;
-    G4ParticleTable *m_pParticleTable;
+    G4int atomicNumber;
+    G4int atomicMass;
+    G4int ionCharge;
+    G4double ionExciteEnergy;
 };

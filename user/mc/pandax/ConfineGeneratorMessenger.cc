@@ -1,40 +1,40 @@
 #include <G4Geantino.hh>
-#include <G4ThreeVector.hh>
-#include <G4ParticleTable.hh>
 #include <G4IonTable.hh>
-#include <G4UIdirectory.hh>
-#include <G4UIcmdWithoutParameter.hh>
-#include <G4UIcmdWithAString.hh>
-#include <G4UIcmdWithADoubleAndUnit.hh>
+#include <G4ParticleTable.hh>
+#include <G4ThreeVector.hh>
+#include <G4Tokenizer.hh>
 #include <G4UIcmdWith3Vector.hh>
 #include <G4UIcmdWith3VectorAndUnit.hh>
-#include <G4UIcmdWithAnInteger.hh>
-#include <G4UIcmdWithADouble.hh>
 #include <G4UIcmdWithABool.hh>
-#include <G4Tokenizer.hh>
+#include <G4UIcmdWithADouble.hh>
+#include <G4UIcmdWithADoubleAndUnit.hh>
+#include <G4UIcmdWithAString.hh>
+#include <G4UIcmdWithAnInteger.hh>
+#include <G4UIcmdWithoutParameter.hh>
+#include <G4UIdirectory.hh>
 #include <G4ios.hh>
 #include <fstream>
 #include <iomanip>
 
-#include "ConfineGeneratorMessenger.hh"
 #include "ConfineGenerator.hh"
+#include "ConfineGeneratorMessenger.hh"
 
 #include <G4SystemOfUnits.hh>
 
 ConfineGeneratorMessenger::ConfineGeneratorMessenger(ConfineGenerator *gen)
-    : myGen{ gen }, cgsDir{ new G4UIdirectory("/cgs/") },
-      shapeCmd{ new G4UIcmdWithAString("/cgs/shape", this) },
-      confineCmd{ new G4UIcmdWithAString("/cgs/confine", this) },
-      confineDir{ new G4UIdirectory("/cgs/conf/") },
-      confineMaterialCmd{ new G4UIcmdWithAString("/cgs/conf/material", this) },
-      particleCmd{ new G4UIcmdWithAString("/cgs/particle", this) },
-      ionCmd{ new G4UIcommand("/cgs/ion", this) },
-      centerCmd{ new G4UIcmdWith3VectorAndUnit("/cgs/centre", this) },
-      radiusCmd{ new G4UIcmdWithADoubleAndUnit("/cgs/radius", this) },
-      halfXCmd{ new G4UIcmdWithADoubleAndUnit("/cgs/halfx", this) },
-      halfYCmd{ new G4UIcmdWithADoubleAndUnit("/cgs/halfy", this) },
-      halfZCmd{ new G4UIcmdWithADoubleAndUnit("/cgs/halfz", this) },
-      energyCmd{ new G4UIcmdWithADoubleAndUnit("/cgs/energy", this) } {
+    : myGen{gen}, cgsDir{new G4UIdirectory("/cgs/")},
+      shapeCmd{new G4UIcmdWithAString("/cgs/shape", this)},
+      confineCmd{new G4UIcmdWithAString("/cgs/confine", this)},
+      confineDir{new G4UIdirectory("/cgs/conf/")},
+      confineMaterialCmd{new G4UIcmdWithAString("/cgs/conf/material", this)},
+      particleCmd{new G4UIcmdWithAString("/cgs/particle", this)},
+      ionCmd{new G4UIcommand("/cgs/ion", this)},
+      centerCmd{new G4UIcmdWith3VectorAndUnit("/cgs/centre", this)},
+      radiusCmd{new G4UIcmdWithADoubleAndUnit("/cgs/radius", this)},
+      halfXCmd{new G4UIcmdWithADoubleAndUnit("/cgs/halfx", this)},
+      halfYCmd{new G4UIcmdWithADoubleAndUnit("/cgs/halfy", this)},
+      halfZCmd{new G4UIcmdWithADoubleAndUnit("/cgs/halfz", this)},
+      energyCmd{new G4UIcmdWithADoubleAndUnit("/cgs/energy", this)} {
     cgsDir->SetGuidance("confined particle source control commands.");
 
     shapeCmd->SetGuidance("Set shape of particle source.");
@@ -119,40 +119,25 @@ void ConfineGeneratorMessenger::SetNewValue(G4UIcommand *command,
     } else if (command == energyCmd.get()) {
         myGen->setEnergy(energyCmd->GetNewDoubleValue(newValues));
     } else if (command == ionCmd.get()) {
-
         G4Tokenizer next(newValues);
 
         // check argument
-        m_iAtomicNumber = StoI(next());
-        m_iAtomicMass = StoI(next());
-        G4String sQ = next();
-
-        if (sQ.isNull()) {
-            m_iIonCharge = m_iAtomicNumber;
-        } else {
-            m_iIonCharge = StoI(sQ);
-            sQ = next();
-            if (sQ.isNull()) {
-                m_dIonExciteEnergy = 0.0;
-            } else {
-                m_dIonExciteEnergy = StoD(sQ) * keV;
-            }
-        }
+        atomicNumber = StoI(next());
+        atomicMass = StoI(next());
+        ionCharge = atomicNumber;
 
         G4ParticleDefinition *ion;
 
-        m_pParticleTable = G4ParticleTable::GetParticleTable();
-
-        ion = m_pParticleTable->GetIonTable()->GetIon(
-            m_iAtomicNumber, m_iAtomicMass, m_dIonExciteEnergy);
-        if (ion == 0) {
-            G4cout << "Ion with Z=" << m_iAtomicNumber;
-            G4cout << " A=" << m_iAtomicMass << "is not be defined" << G4endl;
+        auto particleTable = G4ParticleTable::GetParticleTable();
+        ion = particleTable->GetIonTable()->GetIon(atomicNumber, atomicMass, 0);
+        if (ion == nullptr) {
+            G4cerr << "Ion with Z = " << atomicNumber;
+            G4cerr << ", A = " << atomicMass << " is not be defined" << G4endl;
         } else {
             myGen->SetParticleDefinition(ion);
-            myGen->SetParticleCharge(m_iIonCharge * eplus);
+            myGen->SetParticleCharge(ionCharge * eplus);
         }
     } else {
-        G4cout << "Wrong command" << G4endl;
+        G4cerr << "Not implemented: " << command->GetCommandPath() << G4endl;
     }
 }
