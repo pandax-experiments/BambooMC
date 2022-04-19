@@ -27,7 +27,7 @@ class ConfineGenerator : public BambooGenerator {
 
     void confineSourceToMaterial(const G4String &m);
 
-    void setParticleType(const G4String &t) { particle_type = t; }
+    void setParticleType(const G4String &t);
 
     void setShape(const G4String &hShape) { shape = hShape; }
 

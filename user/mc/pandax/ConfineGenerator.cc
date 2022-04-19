@@ -130,6 +130,18 @@ G4ThreeVector ConfineGenerator::generateRealPosition() {
     return center;
 }
 
+void ConfineGenerator::setParticleType(const G4String &t) {
+    particle_type = t;
+    if (particle_type != "ion") {
+	auto table = G4ParticleTable::GetParticleTable();
+	auto def = table->FindParticle(particle_type);
+        if (def != 0) {
+	    setParticleDefinition(def);
+        }
+    }
+}
+
+
 G4ThreeVector ConfineGenerator::generatePointsInVolume() {
 
     G4double x{0}, y{0}, z{0};
