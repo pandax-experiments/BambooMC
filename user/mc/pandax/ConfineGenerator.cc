@@ -31,8 +31,9 @@ void ConfineGenerator::GeneratePrimaries(G4Event *anEvent) {
     auto vertex = new G4PrimaryVertex(pos, 0);
 
     // need to update in future
-    G4PrimaryParticle *particle =
-        new G4PrimaryParticle(particle_definition, 0, 0, 0);
+    G4PrimaryParticle *particle = new G4PrimaryParticle(particle_definition);
+    particle->SetKineticEnergy(monoEnergy);
+    particle->SetMomentumDirection(direction);
     vertex->SetPrimary(particle);
     anEvent->AddPrimaryVertex(vertex);
 }

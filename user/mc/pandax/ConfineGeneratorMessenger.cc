@@ -34,7 +34,8 @@ ConfineGeneratorMessenger::ConfineGeneratorMessenger(ConfineGenerator *gen)
       halfXCmd{new G4UIcmdWithADoubleAndUnit("/cgs/halfx", this)},
       halfYCmd{new G4UIcmdWithADoubleAndUnit("/cgs/halfy", this)},
       halfZCmd{new G4UIcmdWithADoubleAndUnit("/cgs/halfz", this)},
-      energyCmd{new G4UIcmdWithADoubleAndUnit("/cgs/energy", this)} {
+      energyCmd{new G4UIcmdWithADoubleAndUnit("/cgs/energy", this)},
+      directionCmd{new G4UIcmdWith3Vector("/cgs/direction", this)} {
     cgsDir->SetGuidance("confined particle source control commands.");
 
     shapeCmd->SetGuidance("Set shape of particle source.");
@@ -91,6 +92,9 @@ ConfineGeneratorMessenger::ConfineGeneratorMessenger(ConfineGenerator *gen)
     energyCmd->SetGuidance("Set kinetic energy.");
     energyCmd->SetParameterName("Energy", false, false);
     energyCmd->SetDefaultUnit("keV");
+
+    directionCmd->SetGuidance("Set direction");
+    directionCmd->SetParameterName("dir_x", "dir_y", "dir_z", false);
 }
 
 void ConfineGeneratorMessenger::SetNewValue(G4UIcommand *command,
@@ -115,6 +119,8 @@ void ConfineGeneratorMessenger::SetNewValue(G4UIcommand *command,
         myGen->setHalfZ(halfZCmd->GetNewDoubleValue(newValues));
     } else if (command == energyCmd.get()) {
         myGen->setEnergy(energyCmd->GetNewDoubleValue(newValues));
+    } else if (command == directionCmd.get()) {
+	myGen->setDirection(directionCmd->GetNew3VectorValue(newValues));
     } else if (command == ionCmd.get()) {
         G4Tokenizer next(newValues);
 

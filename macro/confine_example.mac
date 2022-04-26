@@ -1,5 +1,8 @@
-/cgs/particle ion
-/cgs/ion 92 238
+#/cgs/particle ion
+#/cgs/ion 92 238
+/cgs/particle gamma
+/cgs/energy 500
+/cgs/direction 0 0 1
 /cgs/shape Box
 # uncomment following line to confine to materials
 #/cgs/conf/material G4_STAINLESS-STEEL G4_lXe

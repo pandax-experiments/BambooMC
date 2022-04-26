@@ -45,6 +45,10 @@ class ConfineGenerator : public BambooGenerator {
 
     void setEnergy(G4double energy) { monoEnergy = energy; }
 
+    void setDirection(const G4ThreeVector &hDirection) {
+	direction = hDirection;
+    }
+    
     void setParticleDefinition(G4ParticleDefinition *def) {
         particle_definition = def;
     }
@@ -72,6 +76,7 @@ class ConfineGenerator : public BambooGenerator {
     G4double halfz;
     G4double radius;
     G4double monoEnergy;
+    G4ThreeVector direction;
     G4bool confine;
     G4bool confine_material;
     std::set<G4String> volume_names;
