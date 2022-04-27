@@ -33,6 +33,9 @@ void ConfineGenerator::GeneratePrimaries(G4Event *anEvent) {
     // need to update in future
     G4PrimaryParticle *particle = new G4PrimaryParticle(particle_definition);
     particle->SetKineticEnergy(monoEnergy);
+    if (angle_type == "iso") {
+	GenerateIsotropicFlux();
+    }
     particle->SetMomentumDirection(direction);
     vertex->SetPrimary(particle);
     anEvent->AddPrimaryVertex(vertex);
@@ -175,4 +178,20 @@ G4bool ConfineGenerator::isSourceConfined(const G4ThreeVector &pos) {
         return true;
     }
     return false;
+}
+
+void ConfineGenerator::GenerateIsotropicFlux() {
+
+    G4double costheta = 1. - G4UniformRand() * 2;
+    G4double sintheta = std::sqrt(1. - costheta*costheta);
+
+    G4double Phi = M_PI * 2 * G4UniformRand();
+    G4double sinphi = std::sin(Phi);
+    G4double cosphi = std::cos(Phi);
+
+    G4double px = -sintheta * cosphi;
+    G4double py = -sintheta * sinphi;
+    G4double pz = -costheta;
+
+    direction = G4ThreeVector(px, py, pz);
 }

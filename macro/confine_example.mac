@@ -2,6 +2,7 @@
 #/cgs/ion 92 238
 /cgs/particle gamma
 /cgs/energy 500
+/cgs/angtype iso
 /cgs/direction 0 0 1
 /cgs/shape Box
 # uncomment following line to confine to materials
