@@ -36,7 +36,9 @@ ConfineGeneratorMessenger::ConfineGeneratorMessenger(ConfineGenerator *gen)
       halfZCmd{new G4UIcmdWithADoubleAndUnit("/cgs/halfz", this)},
       energyCmd{new G4UIcmdWithADoubleAndUnit("/cgs/energy", this)},
       directionCmd{new G4UIcmdWith3Vector("/cgs/direction", this)},
-      angtypeCmd{new G4UIcmdWithAString("/cgs/angtype", this)} {
+      angularDir{new G4UIdirectory("/cgs/ang/")},
+      angularTypeCmd{new G4UIcmdWithAString("/cgs/ang/type", this)} {
+
     cgsDir->SetGuidance("confined particle source control commands.");
 
     shapeCmd->SetGuidance("Set shape of particle source.");
@@ -96,11 +98,13 @@ ConfineGeneratorMessenger::ConfineGeneratorMessenger(ConfineGenerator *gen)
 
     directionCmd->SetGuidance("Set direction");
     directionCmd->SetParameterName("dir_x", "dir_y", "dir_z", false);
+    directionCmd->SetDefaultValue(G4ThreeVector(0, 0, 1));
 
-    angtypeCmd->SetGuidance("Sets angular source distribution type");
-    angtypeCmd->SetGuidance("Possible variables are: iso");
-    angtypeCmd->SetParameterName("AngDis",false,false);
-    angtypeCmd->SetCandidates("iso");
+    angularDir->SetGuidance("Angular command sub directory");
+    angularTypeCmd->SetGuidance("Set type of the source angular distribution");
+    angularTypeCmd->SetGuidance("Possible variables are: iso");
+    angularTypeCmd->SetParameterName("AngularDistributionType", false, false);
+    angularTypeCmd->SetCandidates("iso");
 }
 
 void ConfineGeneratorMessenger::SetNewValue(G4UIcommand *command,
@@ -126,9 +130,10 @@ void ConfineGeneratorMessenger::SetNewValue(G4UIcommand *command,
     } else if (command == energyCmd.get()) {
         myGen->setEnergy(energyCmd->GetNewDoubleValue(newValues));
     } else if (command == directionCmd.get()) {
-	myGen->setDirection(directionCmd->GetNew3VectorValue(newValues));
-    } else if (command == angtypeCmd.get()) {
-	myGen->setAngDistType(newValues);
+        auto v = directionCmd->GetNew3VectorValue(newValues);
+        myGen->setDirection(v / v.mag());
+    } else if (command == angularTypeCmd.get()) {
+        myGen->setAngDistType(newValues);
     } else if (command == ionCmd.get()) {
         G4Tokenizer next(newValues);
 

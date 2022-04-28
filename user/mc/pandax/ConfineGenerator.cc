@@ -16,8 +16,6 @@
 #include <G4VPhysicalVolume.hh>
 #include <Randomize.hh>
 
-#include <exception>
-
 using namespace CLHEP;
 
 GeneratorRegister<ConfineGenerator> ConfineGenerator::reg("ConfineGenerator");
@@ -33,8 +31,8 @@ void ConfineGenerator::GeneratePrimaries(G4Event *anEvent) {
     // need to update in future
     G4PrimaryParticle *particle = new G4PrimaryParticle(particle_definition);
     particle->SetKineticEnergy(monoEnergy);
-    if (angle_type == "iso") {
-	GenerateIsotropicFlux();
+    if (angular_type == "iso") {
+        generateIsotropicDirection();
     }
     particle->SetMomentumDirection(direction);
     vertex->SetPrimary(particle);
@@ -137,14 +135,13 @@ G4ThreeVector ConfineGenerator::generateRealPosition() {
 void ConfineGenerator::setParticleType(const G4String &t) {
     particle_type = t;
     if (particle_type != "ion") {
-	auto table = G4ParticleTable::GetParticleTable();
-	auto def = table->FindParticle(particle_type);
+        auto table = G4ParticleTable::GetParticleTable();
+        auto def = table->FindParticle(particle_type);
         if (def != 0) {
-	    setParticleDefinition(def);
+            setParticleDefinition(def);
         }
     }
 }
-
 
 G4ThreeVector ConfineGenerator::generatePointsInVolume() {
 
@@ -180,14 +177,14 @@ G4bool ConfineGenerator::isSourceConfined(const G4ThreeVector &pos) {
     return false;
 }
 
-void ConfineGenerator::GenerateIsotropicFlux() {
+void ConfineGenerator::generateIsotropicDirection() {
 
     G4double costheta = 1. - G4UniformRand() * 2;
-    G4double sintheta = std::sqrt(1. - costheta*costheta);
+    G4double sintheta = sqrt(1. - costheta * costheta);
 
     G4double Phi = M_PI * 2 * G4UniformRand();
-    G4double sinphi = std::sin(Phi);
-    G4double cosphi = std::cos(Phi);
+    G4double sinphi = sin(Phi);
+    G4double cosphi = cos(Phi);
 
     G4double px = -sintheta * cosphi;
     G4double py = -sintheta * sinphi;

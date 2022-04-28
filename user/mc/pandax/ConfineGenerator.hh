@@ -45,14 +45,10 @@ class ConfineGenerator : public BambooGenerator {
 
     void setEnergy(G4double energy) { monoEnergy = energy; }
 
-    void setDirection(const G4ThreeVector &hDirection) {
-	direction = hDirection;
-    }
+    void setDirection(const G4ThreeVector &d) { direction = d; }
 
-    void setAngDistType(const G4String &hAngleType) {
-	angle_type = hAngleType;
-    }
-    
+    void setAngDistType(const G4String &type) { angular_type = type; }
+
     void setParticleDefinition(G4ParticleDefinition *def) {
         particle_definition = def;
     }
@@ -68,8 +64,8 @@ class ConfineGenerator : public BambooGenerator {
     G4ThreeVector generateRealPosition();
     G4ThreeVector generatePointsInVolume();
     G4bool isSourceConfined(const G4ThreeVector &pos);
-    void GenerateIsotropicFlux();
-    
+    void generateIsotropicDirection();
+
     // class member variables
     std::unique_ptr<ConfineGeneratorMessenger> messenger;
 
@@ -81,8 +77,8 @@ class ConfineGenerator : public BambooGenerator {
     G4double halfz;
     G4double radius;
     G4double monoEnergy;
-    G4ThreeVector direction;
-    G4String angle_type;
+    G4ThreeVector direction{0, 0, 1};
+    G4String angular_type{};
     G4bool confine;
     G4bool confine_material;
     std::set<G4String> volume_names;
