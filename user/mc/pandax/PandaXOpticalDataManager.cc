@@ -142,9 +142,9 @@ void PandaXOpticalDataManager::resetData() {
     tLocal.clear();
     tProper.clear();
     pmtNumber.clear();
-    x.clear();
-    y.clear();
-    z.clear();
+    ox.clear();
+    oy.clear();
+    oz.clear();
     parent.clear();
     photonParentId.clear();
     velocity.clear();
